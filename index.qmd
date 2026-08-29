@@ -1,5 +1,6 @@
 ---
-title: "Home"
+title: "Alhaylam F Alajmi"
+subtitle: "Master of Urban Spatial Analytics | University of Pennsylvania"
 ---
 
 # Alhaylam Alajmi 

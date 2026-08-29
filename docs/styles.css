@@ -1,0 +1,59 @@
+:root {
+  --main-green: #173f35;
+  --soft-green: #315f4f;
+  --gold: #b89a55;
+  --cream: #faf7ef;
+  --penn-blue: #011f5b;
+  --text-color: #293530;
+}
+
+body {
+  background-color: var(--cream);
+  color: var(--text-color);
+  font-family: "Segoe UI", Arial, sans-serif;
+  line-height: 1.7;
+}
+
+.navbar {
+  background-color: var(--main-green) !important;
+  border-bottom: 3px solid var(--gold);
+}
+
+.navbar-brand,
+.navbar-title,
+.navbar-nav .nav-link {
+  color: white !important;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #ead9aa !important;
+}
+
+h1,
+h2,
+h3 {
+  color: var(--main-green);
+}
+
+h2 {
+  border-bottom: 1px solid #d8ceb7;
+  padding-bottom: 0.35rem;
+}
+
+a {
+  color: var(--penn-blue);
+}
+
+a:hover {
+  color: var(--soft-green);
+}
+
+.hero-banner {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0 auto 2rem auto;
+  border: 1px solid #d8ceb7;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(23, 63, 53, 0.15);
+}

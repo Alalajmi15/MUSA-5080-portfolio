@@ -23,7 +23,8 @@ website:
 
 format:
   html:
-    theme: cosmo
+    theme: flatly
+    css: styles.css
     toc: true
     code-fold: false
     code-tools: true

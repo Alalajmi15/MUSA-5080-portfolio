@@ -6,20 +6,37 @@ title: "About Me"
 
 <!-- CHANGE THIS -->
 
-Write a few paragraphs about yourself here: where you came from before MUSA,
-what drew you to urban spatial analytics, and what you're hoping to do with it.
+I am a civil engineer and project controls professional from Saudi Arabia. I earned my Bachelor of Science in Civil Engineering from Texas A&M University before building my career across quality management, construction operations, project controls, risk management, contracts, and data-driven reporting.
+
+My professional experience includes supporting major infrastructure and urban development projects in Saudi Arabia. As a Quality Engineer with Bechtel, I worked on the NEOM Connector Railway Project, supporting construction quality, inspections, technical documentation, and contractor coordination. I later transitioned into project controls with WSP, where I supported multiple Green Riyadh packages through performance monitoring, schedule reviews, variation-order assessment, reporting workflows, and management dashboards.
+
+These experiences showed me that successful infrastructure delivery requires more than engineering and construction. It also depends on understanding where investments are needed, how projects affect cities and communities, and how data can support better decisions. This perspective drew me to the Master of Urban Spatial Analytics program at the University of Pennsylvania.
+
+Through MUSA, I am developing skills in spatial analysis, data science, visualization, and public policy analytics. My goal is to combine these capabilities with my experience in project controls and risk management to support sustainable, human-centered infrastructure and evidence-based urban development aligned with [Saudi Vision 2030](https://www.vision2030.gov.sa/en).
 
 ## Skills
 
 <!-- CHANGE THIS: update this through the semester as it becomes true -->
 
-- **Languages & Tools:** R, Quarto, Git
-- **Spatial:** (add as you learn)
-- **Data:** US Census / ACS via `tidycensus`
+## Skills
+
+- **Project Controls:** Performance monitoring, schedule review, project reporting, and stakeholder coordination
+- **Risk and Change Management:** Risk assessment, contracts, and variation-order evaluation
+- **Data and Reporting:** Advanced Excel, Power BI, dashboards, data structuring, and management reporting
+- **Engineering and Quality:** Civil engineering, construction quality, inspections, technical compliance, and Aconex
+- **Currently Developing:** R, Quarto, Git, spatial analysis, data visualization, and US Census/ACS analysis with `tidycensus`
+
+## Certifications
+
+- **Project Management Professional (PMP®)**
+- **Risk Management Professional (PMI-RMP®)**
+- **Portfolio, Programme and Project Offices (P3O®)**
+- **Saudi Council of Engineers Member**
 
 ## Contact
 
 <!-- CHANGE THIS -->
 
-- Email: your-email@upenn.edu
-- GitHub: [@your-username](https://github.com/your-username)
+- [Email](mailto:alhaylam.alajmi@hotmail.com)
+- [LinkedIn](https://www.linkedin.com/in/alhaylam-alajmi)
+- [GitHub: @Alalajmi15](https://github.com/Alalajmi15)

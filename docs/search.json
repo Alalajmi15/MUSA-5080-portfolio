@@ -10,64 +10,64 @@
     "objectID": "index.html#about-me",
     "href": "index.html#about-me",
     "title": "Alhaylam F Alajmi",
-    "section": "",
-    "text": "I’m a student in the MUSA program at Penn. My background is in civil engineering, project controls, risk management, and major infrastructure projects in Saudi Arabia, and I’m interested in using spatial analytics and data-driven decision-making to support sustainable urban development and Saudi Vision 2030."
+    "section": "About Me",
+    "text": "About Me\n\nI’m a student in the MUSA program at Penn. My background is in civil engineering, project controls, risk management, and major infrastructure projects in Saudi Arabia, and I’m interested in using spatial analytics and data-driven decision-making to support sustainable urban development and Saudi Vision 2030."
   },
   {
     "objectID": "index.html#what-youll-find-here",
     "href": "index.html#what-youll-find-here",
     "title": "Alhaylam F Alajmi",
-    "section": "",
-    "text": "Weekly Notes — what I’m learning each week\nAssignments — analyses completed for the course\nAbout — more background and how to reach me"
+    "section": "What You’ll Find Here",
+    "text": "What You’ll Find Here\n\nWeekly Notes — what I’m learning each week\nAssignments — analyses completed for the course\nAbout — more background and how to reach me"
   },
   {
     "objectID": "index.html#get-in-touch",
     "href": "index.html#get-in-touch",
     "title": "Alhaylam F Alajmi",
-    "section": "",
-    "text": "Email: Alalajmi@upenn.edu\nGitHub: @Alalajmi15"
+    "section": "Get in Touch",
+    "text": "Get in Touch\n\n\nEmail: Alalajmi@upenn.edu\nGitHub: @Alalajmi15"
   },
   {
     "objectID": "weekly-notes/week-01.html",
     "href": "weekly-notes/week-01.html",
     "title": "Week 1: Getting Set Up",
     "section": "",
-    "text": "Set up the portfolio workflow: made a repository from a template, cloned it with GitHub Desktop, edited files in RStudio, rendered with Quarto, and published to GitHub Pages."
+    "text": "In the first session, I created my portfolio repository, cloned it with GitHub Desktop, opened it in RStudio, and published it through GitHub Pages. I also learned how RStudio, Quarto, Git, and GitHub work together."
   },
   {
     "objectID": "weekly-notes/week-01.html#what-we-did",
     "href": "weekly-notes/week-01.html#what-we-did",
     "title": "Week 1: Getting Set Up",
     "section": "",
-    "text": "Set up the portfolio workflow: made a repository from a template, cloned it with GitHub Desktop, edited files in RStudio, rendered with Quarto, and published to GitHub Pages."
+    "text": "In the first session, I created my portfolio repository, cloned it with GitHub Desktop, opened it in RStudio, and published it through GitHub Pages. I also learned how RStudio, Quarto, Git, and GitHub work together."
   },
   {
     "objectID": "weekly-notes/week-01.html#key-concepts",
     "href": "weekly-notes/week-01.html#key-concepts",
     "title": "Week 1: Getting Set Up",
     "section": "Key Concepts",
-    "text": "Key Concepts\nThree places a file can live:\n\nMy computer — where I edit\nGitHub.com — where it’s stored\nMy live site — what the world sees\n\nThe loop: Edit → Save → Render → Commit → Push → wait → refresh"
+    "text": "Key Concepts\n\nAnatomy of a .qmd File\nA .qmd file can contain:\n\nYAML: The page title, description, and date.\nMarkdown: Headings, paragraphs, lists, and links.\nCode chunks: R code that runs during Render.\n\n\n\nSource and Output\n\nFiles such as index.qmd, about.qmd, and week-01.qmd are source files that I edit.\nThe docs/ folder contains the HTML pages produced by Quarto.\nI should edit the .qmd files, not the generated files inside docs/.\n\n\n\nThe Three Places\n\nMy computer: Where I edit my work.\nGitHub.com: Where the repository is stored online.\nThe live website: What visitors see through GitHub Pages.\n\n\n\nRepository\nPronunciation: ri-POZ-uh-tor-ee\nالنطق بالعربي: رِبوزِتوري\nA repository is the main project folder that stores files and uses Git to track their changes and history.\nالشرح بالعربي:\nالمستودع هو المجلد الرئيسي للمشروع. يحتوي على ملفات المشروع ويحفظ سجل التعديلات والنسخ السابقة.\n\n\nMarkdown and R Symbols\n\n# is called a hash. In Markdown, it creates headings. In R, it starts a comment.\n- is called a hyphen or dash. In Markdown, it creates a bullet point. In R, it represents subtraction or a negative number.\n* is called an asterisk. In Markdown, it adds emphasis such as italics or bold. In R, it represents multiplication.\n\n\n\nCommit and Push\n\nCommit: Saves a labeled snapshot of my changes on my computer.\nPush: Sends the committed snapshot to GitHub.com.\n\n\n\nThe Workflow Loop\nEdit → Save → Render → Commit → Push → Wait → Refresh\nQuarto reads the .qmd file, runs its R code chunks, and combines the text and results into an HTML page."
   },
   {
     "objectID": "weekly-notes/week-01.html#proving-r-works",
     "href": "weekly-notes/week-01.html#proving-r-works",
     "title": "Week 1: Getting Set Up",
     "section": "Proving R Works",
-    "text": "Proving R Works\nThe chunk below runs when this page renders. If you can see a result underneath it on your published site, R and Quarto are talking to each other correctly.\n\nsessionInfo()$R.version$version.string\n\n[1] \"R version 4.6.0 (2026-04-24)\""
+    "text": "Proving R Works\nIf the R version appears below after Render, R and Quarto are communicating correctly.\n\nsessionInfo()$R.version$version.string\n\n[1] \"R version 4.6.1 (2026-06-24 ucrt)\""
   },
   {
     "objectID": "weekly-notes/week-01.html#reflection",
     "href": "weekly-notes/week-01.html#reflection",
     "title": "Week 1: Getting Set Up",
     "section": "Reflection",
-    "text": "Reflection\n\nWhat I want out of this course:\nOne thing I’m nervous about:"
+    "text": "Reflection\nI want to become confident using R, Quarto, Git, and GitHub as one connected workflow. I hope to connect spatial analytics with my experience in civil engineering, project controls, and infrastructure. I am nervous about identifying where a problem occurs when several tools are involved. Solving the About page problem helped me understand the difference between source files, rendered output, GitHub, and the live website."
   },
   {
     "objectID": "weekly-notes/week-01.html#questions-i-still-have",
     "href": "weekly-notes/week-01.html#questions-i-still-have",
     "title": "Week 1: Getting Set Up",
     "section": "Questions I Still Have",
-    "text": "Questions I Still Have"
+    "text": "Questions I Still Have\n\nHow can spatial analytics strengthen my work in project controls, risk management, and infrastructure planning?\nHow can I apply data and spatial analysis to support sustainable urban development and Saudi Vision 2030?"
   },
   {
     "objectID": "about.html",
@@ -109,7 +109,7 @@
     "href": "weekly-notes/index.html",
     "title": "Weekly Notes",
     "section": "",
-    "text": "Notes from each week of MUSA 5080. New entries appear here automatically — add a .qmd file to this folder and render.\n\n\n\n\n\n\n\n\n\n\n\nWeek 1: Getting Set Up\n\n\nFirst impressions, and getting the workflow running.\n\n\n\n\n\nAug 28, 2026\n\n\n\n\n\nNo matching items"
+    "text": "Notes from each week of MUSA 5080. New entries appear here automatically — add a .qmd file to this folder and render.\n\n\n\n\n\n\n\n\n\n\n\nWeek 2: Census Data\n\n\nOne line about this page.\n\n\n\n\n\nSep 5, 2026\n\n\n\n\n\n\n\nWeek 1: Getting Set Up\n\n\nFirst impressions and getting the portfolio workflow running.\n\n\n\n\n\nAug 28, 2026\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "data/readme.html",
@@ -131,5 +131,12 @@
     "title": "About Me",
     "section": "Certifications",
     "text": "Certifications\n\nProject Management Professional (PMP®)\nRisk Management Professional (PMI-RMP®)\nPortfolio, Programme and Project Offices (P3O®)\nSaudi Council of Engineers Member"
+  },
+  {
+    "objectID": "weekly-notes/week-01.html#ملاحظاتي",
+    "href": "weekly-notes/week-01.html#ملاحظاتي",
+    "title": "Week 1: Getting Set Up",
+    "section": "ملاحظاتي",
+    "text": "ملاحظاتي\n\nتعلمت الفرق بين ملفات المصدر والصفحات الجاهزة للنشر.\nحفظ الملف على الجهاز لا يعني أنه نُشر على الموقع.\nبعد الحفظ، يجب إنشاء نسخة موثقة من التعديلات ثم رفعها إلى المستودع الإلكتروني.\nواجهت مشكلة في تحديث صفحة التعريف لأنني لم أعد بناء الموقع كاملًا.\nتعلمت التحقق من الملف الصحيح ومن النسخة المنشورة عند حدوث مشكلة.\nقد يتأخر ظهور التعديلات على الموقع عدة دقائق.دة دقائق قبل ظهور التغيير."
   }
 ]

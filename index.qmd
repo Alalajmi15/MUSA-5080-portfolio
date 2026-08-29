@@ -3,6 +3,8 @@ title: "Alhaylam F Alajmi"
 subtitle: "Project Controls Engineer | Urban Spatial Analytics | Infrastructure & Risk"
 
 ---
+![](images/portfolio-banner.jpeg){.hero-banner fig-alt="A banner connecting Penn, Saudi Arabia, spatial analytics, and Vision 2030."}
+
 
 # Welcome (أهلاً) 
 

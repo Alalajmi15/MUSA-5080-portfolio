@@ -6,7 +6,7 @@ title: "About Me"
 
 <!-- CHANGE THIS -->
 
-I am a civil engineer and project controls professional from Kingdom of Saudi Arabia. I earned my Bachelor of Science in Civil Engineering from Texas A&M University before building my career across quality management, construction operations, project controls, risk management, contracts, and data-driven reporting.
+I am a civil engineer and project controls professional from the Kingdom of Saudi Arabia. I earned my Bachelor of Science in Civil Engineering from Texas A&M University before building my career across quality management, construction operations, project controls, risk management, contracts, and data-driven reporting.
 
 My professional experience includes supporting major infrastructure and urban development projects in Saudi Arabia. As a Quality Engineer with Bechtel, I worked on the NEOM Connector Railway Project, supporting construction quality, inspections, technical documentation, and contractor coordination. I later transitioned into project controls with WSP, where I supported multiple Green Riyadh packages through performance monitoring, schedule reviews, variation-order assessment, reporting workflows, and management dashboards.
 

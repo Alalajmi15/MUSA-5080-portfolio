@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="dcterms.date" content="2026-08-28">
-<meta name="description" content="First impressions, and getting the workflow running.">
+<meta name="description" content="First impressions and getting the portfolio workflow running.">
 
 <title>Week 1: Getting Set Up – Alhaylam Alajmi - MUSA 5080 Portfolio</title>
 <style>
@@ -168,7 +168,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
    
   <ul>
   <li><a href="#what-we-did" id="toc-what-we-did" class="nav-link active" data-scroll-target="#what-we-did">What We Did</a></li>
-  <li><a href="#key-concepts" id="toc-key-concepts" class="nav-link" data-scroll-target="#key-concepts">Key Concepts</a></li>
+  <li><a href="#key-concepts" id="toc-key-concepts" class="nav-link" data-scroll-target="#key-concepts">Key Concepts</a>
+  <ul class="collapse">
+  <li><a href="#anatomy-of-a-.qmd-file" id="toc-anatomy-of-a-.qmd-file" class="nav-link" data-scroll-target="#anatomy-of-a-.qmd-file">Anatomy of a <code>.qmd</code> File</a></li>
+  <li><a href="#source-and-output" id="toc-source-and-output" class="nav-link" data-scroll-target="#source-and-output">Source and Output</a></li>
+  <li><a href="#the-three-places" id="toc-the-three-places" class="nav-link" data-scroll-target="#the-three-places">The Three Places</a></li>
+  <li><a href="#repository" id="toc-repository" class="nav-link" data-scroll-target="#repository">Repository</a></li>
+  <li><a href="#markdown-and-r-symbols" id="toc-markdown-and-r-symbols" class="nav-link" data-scroll-target="#markdown-and-r-symbols">Markdown and R Symbols</a></li>
+  <li><a href="#commit-and-push" id="toc-commit-and-push" class="nav-link" data-scroll-target="#commit-and-push">Commit and Push</a></li>
+  <li><a href="#the-workflow-loop" id="toc-the-workflow-loop" class="nav-link" data-scroll-target="#the-workflow-loop">The Workflow Loop</a></li>
+  </ul></li>
+  <li><a href="#ملاحظاتي" id="toc-ملاحظاتي" class="nav-link" data-scroll-target="#ملاحظاتي">ملاحظاتي</a></li>
   <li><a href="#proving-r-works" id="toc-proving-r-works" class="nav-link" data-scroll-target="#proving-r-works">Proving R Works</a></li>
   <li><a href="#reflection" id="toc-reflection" class="nav-link" data-scroll-target="#reflection">Reflection</a></li>
   <li><a href="#questions-i-still-have" id="toc-questions-i-still-have" class="nav-link" data-scroll-target="#questions-i-still-have">Questions I Still Have</a></li>
@@ -185,7 +195,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <div>
   <div class="description">
-    First impressions, and getting the workflow running.
+    First impressions and getting the portfolio workflow running.
   </div>
 </div>
 
@@ -210,40 +220,94 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="what-we-did" class="level2">
 <h2 class="anchored" data-anchor-id="what-we-did">What We Did</h2>
-<!-- CHANGE THIS: replace with your own notes -->
-<p>Set up the portfolio workflow: made a repository from a template, cloned it with GitHub Desktop, edited files in RStudio, rendered with Quarto, and published to GitHub Pages.</p>
+<p>In the first session, I created my portfolio repository, cloned it with GitHub Desktop, opened it in RStudio, and published it through GitHub Pages. I also learned how RStudio, Quarto, Git, and GitHub work together.</p>
 </section>
 <section id="key-concepts" class="level2">
 <h2 class="anchored" data-anchor-id="key-concepts">Key Concepts</h2>
-<p>Three places a file can live:</p>
+<section id="anatomy-of-a-.qmd-file" class="level3">
+<h3 class="anchored" data-anchor-id="anatomy-of-a-.qmd-file">Anatomy of a <code>.qmd</code> File</h3>
+<p>A <code>.qmd</code> file can contain:</p>
 <ol type="1">
-<li><strong>My computer</strong> — where I edit</li>
-<li><strong>GitHub.com</strong> — where it’s stored</li>
-<li><strong>My live site</strong> — what the world sees</li>
+<li><strong>YAML:</strong> The page title, description, and date.</li>
+<li><strong>Markdown:</strong> Headings, paragraphs, lists, and links.</li>
+<li><strong>Code chunks:</strong> R code that runs during Render.</li>
 </ol>
-<p>The loop: <strong>Edit → Save → Render → Commit → Push → wait → refresh</strong></p>
+</section>
+<section id="source-and-output" class="level3">
+<h3 class="anchored" data-anchor-id="source-and-output">Source and Output</h3>
+<ul>
+<li>Files such as <code>index.qmd</code>, <code>about.qmd</code>, and <code>week-01.qmd</code> are source files that I edit.</li>
+<li>The <code>docs/</code> folder contains the HTML pages produced by Quarto.</li>
+<li>I should edit the <code>.qmd</code> files, not the generated files inside <code>docs/</code>.</li>
+</ul>
+</section>
+<section id="the-three-places" class="level3">
+<h3 class="anchored" data-anchor-id="the-three-places">The Three Places</h3>
+<ol type="1">
+<li><strong>My computer:</strong> Where I edit my work.</li>
+<li><strong>GitHub.com:</strong> Where the repository is stored online.</li>
+<li><strong>The live website:</strong> What visitors see through GitHub Pages.</li>
+</ol>
+</section>
+<section id="repository" class="level3">
+<h3 class="anchored" data-anchor-id="repository">Repository</h3>
+<p><strong>Pronunciation:</strong> <em>ri-POZ-uh-tor-ee</em></p>
+<p><strong>النطق بالعربي:</strong> رِبوزِتوري</p>
+<p>A repository is the main project folder that stores files and uses Git to track their changes and history.</p>
+<p><strong>الشرح بالعربي:</strong></p>
+<p>المستودع هو المجلد الرئيسي للمشروع. يحتوي على ملفات المشروع ويحفظ سجل التعديلات والنسخ السابقة.</p>
+</section>
+<section id="markdown-and-r-symbols" class="level3">
+<h3 class="anchored" data-anchor-id="markdown-and-r-symbols">Markdown and R Symbols</h3>
+<ul>
+<li><code>#</code> is called a <strong>hash</strong>. In Markdown, it creates headings. In R, it starts a comment.</li>
+<li><code>-</code> is called a <strong>hyphen</strong> or <strong>dash</strong>. In Markdown, it creates a bullet point. In R, it represents subtraction or a negative number.</li>
+<li><code>*</code> is called an <strong>asterisk</strong>. In Markdown, it adds emphasis such as <em>italics</em> or <strong>bold</strong>. In R, it represents multiplication.</li>
+</ul>
+</section>
+<section id="commit-and-push" class="level3">
+<h3 class="anchored" data-anchor-id="commit-and-push">Commit and Push</h3>
+<ul>
+<li><strong>Commit:</strong> Saves a labeled snapshot of my changes on my computer.</li>
+<li><strong>Push:</strong> Sends the committed snapshot to GitHub.com.</li>
+</ul>
+</section>
+<section id="the-workflow-loop" class="level3">
+<h3 class="anchored" data-anchor-id="the-workflow-loop">The Workflow Loop</h3>
+<p><strong>Edit → Save → Render → Commit → Push → Wait → Refresh</strong></p>
+<p>Quarto reads the <code>.qmd</code> file, runs its R code chunks, and combines the text and results into an HTML page.</p>
+</section>
+</section>
+<section id="ملاحظاتي" class="level2">
+<h2 class="anchored" data-anchor-id="ملاحظاتي">ملاحظاتي</h2>
+<ul>
+<li>تعلمت الفرق بين ملفات المصدر والصفحات الجاهزة للنشر.</li>
+<li>حفظ الملف على الجهاز لا يعني أنه نُشر على الموقع.</li>
+<li>بعد الحفظ، يجب إنشاء نسخة موثقة من التعديلات ثم رفعها إلى المستودع الإلكتروني.</li>
+<li>واجهت مشكلة في تحديث صفحة التعريف لأنني لم أعد بناء الموقع كاملًا.</li>
+<li>تعلمت التحقق من الملف الصحيح ومن النسخة المنشورة عند حدوث مشكلة.</li>
+<li>قد يتأخر ظهور التعديلات على الموقع عدة دقائق.دة دقائق قبل ظهور التغيير.</li>
+</ul>
 </section>
 <section id="proving-r-works" class="level2">
 <h2 class="anchored" data-anchor-id="proving-r-works">Proving R Works</h2>
-<p>The chunk below runs when this page renders. If you can see a result underneath it on your published site, R and Quarto are talking to each other correctly.</p>
+<p>If the R version appears below after Render, R and Quarto are communicating correctly.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()<span class="sc">$</span>R.version<span class="sc">$</span>version.string</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "R version 4.6.0 (2026-04-24)"</code></pre>
+<pre><code>[1] "R version 4.6.1 (2026-06-24 ucrt)"</code></pre>
 </div>
 </div>
 </section>
 <section id="reflection" class="level2">
 <h2 class="anchored" data-anchor-id="reflection">Reflection</h2>
-<!-- CHANGE THIS: 3-4 sentences -->
-<p>What I want out of this course:</p>
-<p>One thing I’m nervous about:</p>
+<p>I want to become confident using R, Quarto, Git, and GitHub as one connected workflow. I hope to connect spatial analytics with my experience in civil engineering, project controls, and infrastructure. I am nervous about identifying where a problem occurs when several tools are involved. Solving the About page problem helped me understand the difference between source files, rendered output, GitHub, and the live website.</p>
 </section>
 <section id="questions-i-still-have" class="level2">
 <h2 class="anchored" data-anchor-id="questions-i-still-have">Questions I Still Have</h2>
 <ul>
-<li></li>
-<li></li>
+<li>How can spatial analytics strengthen my work in project controls, risk management, and infrastructure planning?</li>
+<li>How can I apply data and spatial analysis to support sustainable urban development and Saudi Vision 2030?</li>
 </ul>
 
 
@@ -705,49 +769,90 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Week 1: Getting Set Up"</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="an">description:</span><span class="co"> "First impressions, and getting the workflow running."</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="an">description:</span><span class="co"> "First impressions and getting the portfolio workflow running."</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> 2026-08-28</span></span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">## What We Did</span></span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!-- CHANGE THIS: replace with your own notes --&gt;</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>In the first session, I created my portfolio repository, cloned it with GitHub Desktop, opened it in RStudio, and published it through GitHub Pages. I also learned how RStudio, Quarto, Git, and GitHub work together.</span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>Set up the portfolio workflow: made a repository from a template, cloned it with</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>GitHub Desktop, edited files in RStudio, rendered with Quarto, and published to</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>GitHub Pages.</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="fu">## Key Concepts</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="fu">### Anatomy of a `.qmd` File</span></span>
 <span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="fu">## Key Concepts</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>A <span class="in">`.qmd`</span> file can contain:</span>
 <span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>Three places a file can live:</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**My computer** — where I edit</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**GitHub.com** — where it's stored</span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**My live site** — what the world sees</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**YAML:** The page title, description, and date.</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Markdown:** Headings, paragraphs, lists, and links.</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Code chunks:** R code that runs during Render.</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="fu">### Source and Output</span></span>
 <span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>The loop: **Edit → Save → Render → Commit → Push → wait → refresh**</span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="fu">## Proving R Works</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Files such as <span class="in">`index.qmd`</span>, <span class="in">`about.qmd`</span>, and <span class="in">`week-01.qmd`</span> are source files that I edit.</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>The <span class="in">`docs/`</span> folder contains the HTML pages produced by Quarto.</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>I should edit the <span class="in">`.qmd`</span> files, not the generated files inside <span class="in">`docs/`</span>.</span>
 <span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>The chunk below runs when this page renders. If you can see a result underneath</span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>it on your published site, R and Quarto are talking to each other correctly.</span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()<span class="sc">$</span>R.version<span class="sc">$</span>version.string</span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="fu">## Reflection</span></span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a><span class="co">&lt;!-- CHANGE THIS: 3-4 sentences --&gt;</span></span>
-<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>What I want out of this course:</span>
-<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>One thing I'm nervous about:</span>
-<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a><span class="fu">## Questions I Still Have</span></span>
-<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>-</span>
-<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>-</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="fu">### The Three Places</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**My computer:** Where I edit my work.</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**GitHub.com:** Where the repository is stored online.</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**The live website:** What visitors see through GitHub Pages.</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a><span class="fu">### Repository</span></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>**Pronunciation:** *ri-POZ-uh-tor-ee*</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>**النطق بالعربي:** رِبوزِتوري</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>A repository is the main project folder that stores files and uses Git to track their changes and history.</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>**الشرح بالعربي:**</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>المستودع هو المجلد الرئيسي للمشروع. يحتوي على ملفات المشروع ويحفظ سجل التعديلات والنسخ السابقة.</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a><span class="fu">### Markdown and R Symbols</span></span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`#`</span> is called a **hash**. In Markdown, it creates headings. In R, it starts a comment.</span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`-`</span> is called a **hyphen** or **dash**. In Markdown, it creates a bullet point. In R, it represents subtraction or a negative number.</span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`*`</span> is called an **asterisk**. In Markdown, it adds emphasis such as *italics* or **bold**. In R, it represents multiplication.</span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a><span class="fu">### Commit and Push</span></span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Commit:** Saves a labeled snapshot of my changes on my computer.</span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Push:** Sends the committed snapshot to GitHub.com.</span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a><span class="fu">### The Workflow Loop</span></span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>**Edit → Save → Render → Commit → Push → Wait → Refresh**</span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>Quarto reads the <span class="in">`.qmd`</span> file, runs its R code chunks, and combines the text and results into an HTML page.</span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a><span class="fu">## ملاحظاتي </span></span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>تعلمت الفرق بين ملفات المصدر والصفحات الجاهزة للنشر.</span>
+<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>حفظ الملف على الجهاز لا يعني أنه نُشر على الموقع.</span>
+<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>بعد الحفظ، يجب إنشاء نسخة موثقة من التعديلات ثم رفعها إلى المستودع الإلكتروني.</span>
+<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>واجهت مشكلة في تحديث صفحة التعريف لأنني لم أعد بناء الموقع كاملًا.</span>
+<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>تعلمت التحقق من الملف الصحيح ومن النسخة المنشورة عند حدوث مشكلة.</span>
+<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>قد يتأخر ظهور التعديلات على الموقع عدة دقائق.دة دقائق قبل ظهور التغيير.</span>
+<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a><span class="fu">## Proving R Works</span></span>
+<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a>If the R version appears below after Render, R and Quarto are communicating correctly.</span>
+<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()<span class="sc">$</span>R.version<span class="sc">$</span>version.string</span>
+<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a><span class="fu">## Reflection</span></span>
+<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a>I want to become confident using R, Quarto, Git, and GitHub as one connected workflow. I hope to connect spatial analytics with my experience in civil engineering, project controls, and infrastructure. I am nervous about identifying where a problem occurs when several tools are involved. Solving the About page problem helped me understand the difference between source files, rendered output, GitHub, and the live website.</span>
+<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a><span class="fu">## Questions I Still Have</span></span>
+<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>How can spatial analytics strengthen my work in project controls, risk management, and infrastructure planning?</span>
+<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>How can I apply data and spatial analysis to support sustainable urban development and Saudi Vision 2030?</span>
 </code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

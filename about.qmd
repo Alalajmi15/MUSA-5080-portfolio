@@ -4,22 +4,19 @@ title: "About Me"
 
 ## Background
 
-<!-- CHANGE THIS -->
+Before joining MUSA, I earned a Bachelor of Science in Civil Engineering from Texas A&M University and worked on major infrastructure and urban development projects in Saudi Arabia. My experience includes quality engineering on Bechtel's NEOM Connector Railway Project and project controls with WSP across multiple Green Riyadh packages, focusing on reporting, schedule review, risk and change management, and project dashboards.
 
-Write a few paragraphs about yourself here: where you came from before MUSA,
-what drew you to urban spatial analytics, and what you're hoping to do with it.
+Working on large infrastructure programs showed me that projects are not only about construction, schedules, and budgets. Their location, surrounding communities, and connection to broader urban policies also influence their success, which drew me to urban spatial analytics.
+
+Through MUSA, I hope to develop my skills in GIS, spatial analysis, data science, and visualization. My long-term goal is to combine these capabilities with my engineering and project controls experience to support evidence-based, sustainable, and human-centered urban development aligned with [Saudi Vision 2030](https://www.vision2030.gov.sa/en).
 
 ## Skills
 
-<!-- CHANGE THIS: update this through the semester as it becomes true -->
-
-- **Languages & Tools:** R, Quarto, Git
-- **Spatial:** (add as you learn)
-- **Data:** US Census / ACS via `tidycensus`
+- **Languages & Tools:** R, Quarto, and Git (currently learning); Excel, Power BI, Primavera P6, and Aconex
+- **Spatial:** GIS, spatial analysis, and data visualization (currently developing)
+- **Data:** Project performance and reporting data; US Census / ACS via `tidycensus`
 
 ## Contact
 
-<!-- CHANGE THIS -->
-
-- Email: your-email@upenn.edu
-- GitHub: [@your-username](https://github.com/your-username)
+- Email: alhaylam.alajmi@hotmail.com
+- GitHub: [@Alalajmi15](https://github.com/Alalajmi15)

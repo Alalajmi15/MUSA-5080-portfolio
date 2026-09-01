@@ -102,7 +102,7 @@
     "href": "assignments/index.html",
     "title": "Assignments",
     "section": "",
-    "text": "Completed assignments for MUSA 5080. New assignments appear here automatically once you add the .qmd file to this folder and render.\n\n\n\n\n\n\n\n\n\n\nNo matching items"
+    "text": "Completed assignments for MUSA 5080. New assignments appear here automatically once you add the .qmd file to this folder and render.\n\n\n\n\n\n\n\n\n\n\n\nAssignment 1: Portfolio Setup\n\n\nCreating and publishing my MUSA 5080 portfolio.\n\n\n\n\n\nSep 4, 2026\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "weekly-notes/index.html",
@@ -138,5 +138,47 @@
     "title": "Week 1: Getting Set Up",
     "section": "ملاحظاتي",
     "text": "ملاحظاتي\n\nتعلمت الفرق بين ملفات المصدر والصفحات الجاهزة للنشر.\nحفظ الملف على الجهاز لا يعني أنه نُشر على الموقع.\nبعد الحفظ، يجب إنشاء نسخة موثقة من التعديلات ثم رفعها إلى المستودع الإلكتروني.\nواجهت مشكلة في تحديث صفحة التعريف لأنني لم أعد بناء الموقع كاملًا.\nتعلمت التحقق من الملف الصحيح ومن النسخة المنشورة عند حدوث مشكلة.\nقد يتأخر ظهور التعديلات على الموقع عدة دقائق.دة دقائق قبل ظهور التغيير."
+  },
+  {
+    "objectID": "assignments/assignment-01.html",
+    "href": "assignments/assignment-01.html",
+    "title": "Assignment 1: Portfolio Setup",
+    "section": "",
+    "text": "For this assignment, I created and published a professional portfolio for MUSA 5080: Public Policy Analytics."
+  },
+  {
+    "objectID": "assignments/assignment-01.html#overview",
+    "href": "assignments/assignment-01.html#overview",
+    "title": "Assignment 1: Portfolio Setup",
+    "section": "",
+    "text": "For this assignment, I created and published a professional portfolio for MUSA 5080: Public Policy Analytics."
+  },
+  {
+    "objectID": "assignments/assignment-01.html#what-i-completed",
+    "href": "assignments/assignment-01.html#what-i-completed",
+    "title": "Assignment 1: Portfolio Setup",
+    "section": "What I Completed",
+    "text": "What I Completed\n\nCreated a GitHub repository from the course template\nCloned and edited the project using GitHub Desktop and RStudio\nCustomized the Home and About pages\nAdded weekly course notes\nAdded a personal banner and customized the website theme\nRendered the website with Quarto and published it through GitHub Pages"
+  },
+  {
+    "objectID": "assignments/assignment-01.html#what-i-learned",
+    "href": "assignments/assignment-01.html#what-i-learned",
+    "title": "Assignment 1: Portfolio Setup",
+    "section": "What I Learned",
+    "text": "What I Learned\nI learned how RStudio, Quarto, Git, GitHub Desktop, and GitHub Pages work together. I also practiced the complete workflow:\nEdit → Save → Render → Commit → Push → Wait → Refresh"
+  },
+  {
+    "objectID": "assignments/assignment-01.html#live-portfolio",
+    "href": "assignments/assignment-01.html#live-portfolio",
+    "title": "Assignment 1: Portfolio Setup",
+    "section": "Live Portfolio",
+    "text": "Live Portfolio\nView my MUSA 5080 portfolio"
+  },
+  {
+    "objectID": "assignments/assignment-01.html#ai-use",
+    "href": "assignments/assignment-01.html#ai-use",
+    "title": "Assignment 1: Portfolio Setup",
+    "section": "AI Use",
+    "text": "AI Use\nI used an AI assistant to help revise wording and troubleshoot parts of the website design and publishing workflow. I reviewed, understood, and implemented the changes myself."
   }
 ]

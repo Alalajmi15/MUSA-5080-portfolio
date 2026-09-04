@@ -1,5 +1,5 @@
 ---
 title: "Week 2: dplyr and Census Data"
-description: "Table Functions and acs date"
+description: "Table functions and acs date"
 date: 2026-09-04
 ---

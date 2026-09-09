@@ -3,3 +3,229 @@ title: "Week 2: dplyr and Census Data"
 description: "Table functions and acs date"
 date: 2026-09-04
 ---
+## What We Covered
+
+This week, we learned the basic structure of R code, how to organize and transform data with `dplyr`, and how to access Census data with `tidycensus`. We also discussed the difference between the Decennial Census and the American Community Survey.
+
+## Where Code Lives
+
+- **Console:** Useful for testing commands, but the code is not saved.
+- **R script:** Stores code in a reusable file.
+- **Code chunk:** Places executable code inside a Quarto document.
+- **Comment:** Text after `#` explains the code and is not executed.
+
+## Objects, Functions, and Arguments
+
+```r
+result <- filter(counties, population > 50000) # Keep larger counties
+```
+
+- `result` is the object that stores the output.
+- `<-` is the assignment arrow.
+- `filter()` is the function or verb.
+- `counties` is the input data.
+- `population > 50000` is the condition or argument.
+- `#` begins a comment that R does not execute.
+
+## Packages
+
+A package adds tools and functions to R.
+
+```r
+install.packages("dplyr")
+```
+
+Installation is normally completed once.
+
+```r
+library(dplyr)
+library(tidycensus)
+```
+
+The required package must be loaded again when starting a new R session.
+
+## Data Frames and Tibbles
+
+A data frame organizes information into rows and columns.
+
+- **Row:** An observation, such as one county.
+- **Column:** A variable, such as population, income, or margin of error.
+- **Tibble:** A modern data frame that prints results more clearly.
+
+Most `dplyr` verbs take a tibble as input and return another tibble as output.
+
+## Important dplyr Verbs
+
+| Verb | Purpose |
+|---|---|
+| `filter()` | Select rows that meet a condition |
+| `select()` | Select specific columns |
+| `mutate()` | Add or calculate a new column |
+| `arrange()` | Sort rows in ascending or descending order |
+| `group_by()` | Divide observations into groups |
+| `summarize()` | Create summary values for each group |
+| `count()` | Count observations in each category |
+
+## Pipes
+
+The pipe `%>%` sends the result of one step into the next step.
+
+```r
+new_data <- counties %>%
+  filter(moe_pct > 10) %>%
+  arrange(desc(moe_pct)) %>%
+  select(NAME, moe_pct)
+```
+
+This code keeps counties with a margin of error above 10 percent, sorts them from highest to lowest, and displays only the county name and margin-of-error percentage.
+
+## Census and ACS Data
+
+The **Decennial Census** happens every ten years and aims to count the full population using a short questionnaire.
+
+The **American Community Survey** is conducted continuously and uses a sample to produce estimates about population, housing, income, education, and other community characteristics.
+
+- **ACS 1-year estimates:** More current and available for places with populations of 65,000 or more.
+- **ACS 3-year estimates:** Discontinued.
+- **ACS 5-year estimates:** Combine five years of responses and are available for smaller geographic areas.
+- Every ACS estimate should be considered together with its margin of error.
+
+## Geographic Levels
+
+Census geography moves from larger to smaller areas:
+
+**State → County → Census Tract → Block Group → Block**
+
+Smaller geographic areas usually contain smaller samples and may have larger margins of error. Geographic boundaries can also change over time, which can make comparisons between years more difficult.
+
+## Getting ACS Data
+
+The `tidycensus` package connects R to Census data.
+
+```r
+data <- get_acs(
+  geography = "county",
+  variables = "B19013_001",
+  state = "TX",
+  year = 2023,
+  survey = "acs5"
+)
+```
+
+The `load_variables()` function can be used to search for available ACS variables.
+
+## Understanding Variable Codes
+
+For the code `B19013_001`:
+
+- `B` identifies a detailed base table.
+- `19013` identifies the table.
+- `001` identifies the line within the table.
+- `E` means estimate when it appears in a wide result.
+- `M` means margin of error when it appears in a wide result.
+
+## Long and Wide Data
+
+In long format, each variable appears in a separate row with columns such as:
+
+- `GEOID`
+- `NAME`
+- `variable`
+- `estimate`
+- `moe`
+
+In wide format, multiple variables appear in the same row. Column names may include `E` for estimate and `M` for margin of error.
+
+## Connection to Assignment 2
+
+In Assignment 2, I used ACS data to examine median home values across Texas counties. I calculated the margin of error as a percentage of the estimate and found that smaller counties generally had less reliable estimates. This showed me that policy decisions should consider data uncertainty, not only the reported estimate.
+
+## Reflection
+
+This lesson helped me understand that data quality is important before making a decision. This connects with my experience in project controls, risk, and quality management because a report can look complete while still containing uncertainty. The margin of error works like a risk indicator that helps identify where more caution is needed. I want to use this approach when evaluating data for infrastructure and urban development decisions.
+
+## Questions I Still Have
+
+- How large can a margin of error become before an estimate should not be used?
+- How can policy analysts balance geographic detail with data reliability?
+
+---
+
+## ملاحظاتي بالعربية
+
+<div dir="rtl">
+
+### كتابة الأوامر وحفظها
+
+- نافذة الأوامر مناسبة لتجربة التعليمات بسرعة، لكن ما أكتبه فيها لا يُحفظ تلقائيًا.
+- ملف الأوامر يحفظ الكود حتى أستطيع الرجوع إليه وتشغيله مرة أخرى.
+- يمكن وضع الكود داخل مستند يحتوي أيضًا على الشرح والنتائج.
+- النص المكتوب بعد علامة التعليق يشرح الكود ولا يتم تشغيله.
+
+### مكونات الأمر
+
+- الكائن هو الاسم الذي نستخدمه لحفظ البيانات أو النتيجة.
+- سهم الإسناد ينقل النتيجة ويحفظها داخل الكائن.
+- الدالة هي العملية التي نريد تنفيذها على البيانات.
+- المدخلات هي البيانات التي ستُطبق عليها العملية.
+- الوسيط يحدد الشرط أو الخيار المستخدم داخل الدالة.
+
+### الحزم البرمجية
+
+- الحزمة البرمجية تضيف أدوات ودوال جديدة إلى البرنامج.
+- يتم تثبيت الحزمة عادة مرة واحدة على الجهاز.
+- يجب تحميل الحزمة عند بدء جلسة جديدة قبل استخدام دوالها.
+- إذا ظهرت رسالة بأن الدالة غير موجودة، فقد يكون السبب أن الحزمة لم تُحمّل.
+
+### تنظيم البيانات
+
+- يتكون جدول البيانات من صفوف وأعمدة.
+- يمثل كل صف مشاهدة واحدة، مثل مقاطعة واحدة.
+- يمثل كل عمود متغيرًا، مثل عدد السكان أو قيمة المنزل أو هامش الخطأ.
+- يمكن اختيار الصفوف التي تحقق شرطًا محددًا.
+- يمكن اختيار الأعمدة المطلوبة فقط.
+- يمكن إنشاء عمود جديد من خلال عملية حسابية.
+- يمكن ترتيب النتائج من الأصغر إلى الأكبر أو من الأكبر إلى الأصغر.
+- يمكن تقسيم البيانات إلى مجموعات ثم حساب ملخص لكل مجموعة.
+
+### تسلسل خطوات التحليل
+
+- يمكن ربط عدة عمليات بحيث تنتقل نتيجة الخطوة الأولى إلى الخطوة التالية.
+- يساعد هذا الأسلوب على قراءة التحليل بالترتيب بدل إنشاء نتيجة منفصلة لكل خطوة.
+- في الواجب قمنا بحساب نسبة هامش الخطأ، ثم ترتيب المقاطعات، ثم تصنيفها حسب الموثوقية.
+
+### بيانات السكان
+
+- يتم إجراء التعداد السكاني الشامل كل عشر سنوات بهدف عد السكان.
+- مسح المجتمع الأمريكي يُجرى بصورة مستمرة ويعتمد على عينة من المجتمع.
+- يوفر المسح معلومات عن السكان والسكن والدخل والتعليم وخصائص أخرى.
+- البيانات المنشورة من المسح هي تقديرات وليست أعدادًا مؤكدة بالكامل.
+- يأتي كل تقدير مع هامش خطأ يوضح مقدار عدم اليقين فيه.
+- تشمل تقديرات السنوات الخمس المجتمعات والمناطق الجغرافية الصغيرة.
+- لا تعني تقديرات السنوات الخمس أنها بيانات سنة واحدة، بل تجمع استجابات خلال خمس سنوات.
+
+### المستويات الجغرافية
+
+- تبدأ المستويات الجغرافية بالولاية ثم المقاطعة ثم المناطق الإحصائية الأصغر.
+- كلما صغر المستوى الجغرافي، صغر حجم العينة غالبًا وارتفع هامش الخطأ.
+- قد تتغير الحدود الجغرافية مع مرور الوقت، ولذلك يجب الحذر عند المقارنة بين سنوات مختلفة.
+
+### التقدير وهامش الخطأ
+
+- التقدير هو القيمة التي ينتجها المسح بناءً على العينة.
+- هامش الخطأ يوضح مقدار احتمال اختلاف القيمة الحقيقية عن التقدير.
+- لا تكفي مقارنة هامش الخطأ كرقم فقط، لأن حجم التقدير يختلف بين المقاطعات.
+- يمكن قسمة هامش الخطأ على التقدير وضرب الناتج في مئة للحصول على نسبة مئوية.
+- كلما ارتفعت هذه النسبة، انخفضت موثوقية التقدير.
+- المقاطعات الصغيرة قد تظهر فيها نسب خطأ أعلى بسبب قلة عدد المشاهدات في العينة.
+
+### ما تعلمته من التطبيق
+
+- تعلمت أن الحصول على البيانات ليس نهاية التحليل؛ يجب تقييم دقتها قبل استخدامها.
+- أظهرت النتائج أن المقاطعات ذات عدد السكان الأقل كانت أقل موثوقية في المتوسط.
+- لا ينبغي معاملة جميع المقاطعات كأن بياناتها متساوية في الدقة.
+- قد يؤدي تجاهل عدم اليقين إلى توزيع غير عادل للتمويل أو اتخاذ قرار غير مناسب.
+- يرتبط هذا بخبرتي في الجودة وإدارة المخاطر، لأن القرار الجيد يعتمد على بيانات موثوقة.
+- يمكن التعامل مع هامش الخطأ كمؤشر للمخاطر يساعد على تحديد النتائج التي تحتاج إلى حذر أكبر.
+
+</div>

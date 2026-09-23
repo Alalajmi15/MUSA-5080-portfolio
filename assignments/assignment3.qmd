@@ -1,7 +1,7 @@
 ---
 title: "Verify the Claim"
 author: "Alhaylam Alajmi"
-date: today
+date: September 23, 2026
 format:
   html:
     toc: true

@@ -1,0 +1,413 @@
+---
+title: "Verify the Claim"
+author: "Alhaylam Alajmi"
+date: today
+format:
+  html:
+    toc: true
+    code-fold: true
+    code-summary: "Show code"
+    embed-resources: true
+---
+## Part 1 — Reconstruct
+
+```{r}
+#| include: false
+library(tidyverse)
+library(tidycensus)
+library(gt)
+```
+
+The article claims that Eastwick's poverty rate increased from 12% in 2006–2010 to 26% in 2013–2017.
+```{r}
+vars_2017 <- load_variables(2017, "acs5")
+View(vars_2017)
+```
+
+I use ACS table B17001. Variable B17001_001 is the total population for whom poverty status is determined, and B17001_002 is the population below the poverty level.
+
+I use the 2010 and 2017 ACS 5-year estimates because they correspond to the article's 2006–2010 and 2013–2017 comparison periods. The two periods do not overlap, so the comparison does not reuse any of the same ACS survey years. Because the article reports results for informal neighborhoods but does not identify which census tracts were aggregated into each neighborhood, I conduct the analysis at the census tract level and do not expect my results to exactly reproduce the article's neighborhood estimates.
+
+```{r}
+poverty_2010 <- get_acs(
+  geography = "tract",
+  variables = c(
+    total = "B17001_001",
+    below_poverty = "B17001_002"
+  ),
+  state = "PA",
+  county = "Philadelphia",
+  year = 2010,
+  survey = "acs5",
+  output = "wide"
+)
+```
+```{r}
+poverty_2017 <- get_acs(
+  geography = "tract",
+  variables = c(
+    total = "B17001_001",
+    below_poverty = "B17001_002"
+  ),
+  state = "PA",
+  county = "Philadelphia",
+  year = 2017,
+  survey = "acs5",
+  output = "wide"
+)
+```
+## Part 2 — Test
+```{r}
+poverty_2010 <- poverty_2010 %>%
+  mutate(
+    poverty_rate = below_povertyE / totalE,
+    poverty_moe = moe_prop(
+      below_povertyE,
+      totalE,
+      below_povertyM,
+      totalM
+    )
+  )
+```
+
+```{r}
+poverty_2017 <- poverty_2017 %>%
+  mutate(
+    poverty_rate = below_povertyE / totalE,
+    poverty_moe = moe_prop(
+      below_povertyE,
+      totalE,
+      below_povertyM,
+      totalM
+    )
+  )
+```
+
+```{r}
+poverty_2010 <- poverty_2010 %>%
+  mutate(
+    cv = (poverty_moe / 1.645) / poverty_rate * 100,
+    reliability = case_when(
+      cv < 12 ~ "Reliable",
+      cv <= 40 ~ "Somewhat reliable",
+      TRUE ~ "Unreliable"
+    )
+  )
+```
+
+```{r}
+poverty_2017 <- poverty_2017 %>%
+  mutate(
+    cv = (poverty_moe / 1.645) / poverty_rate * 100,
+    reliability = case_when(
+      cv < 12 ~ "Reliable",
+      cv <= 40 ~ "Somewhat reliable",
+      TRUE ~ "Unreliable"
+    )
+  )
+```
+
+```{r}
+poverty_2010 <- poverty_2010 %>%
+  mutate(period = "2006-2010")
+
+poverty_2017 <- poverty_2017 %>%
+  mutate(period = "2013-2017")
+```
+
+```{r}
+poverty_change <- bind_rows(
+  poverty_2010,
+  poverty_2017
+)
+```
+
+```{r}
+poverty_wide <- poverty_change %>%
+  select(
+    GEOID,
+    NAME,
+    period,
+    poverty_rate,
+    poverty_moe,
+    cv,
+    reliability
+  )%>%
+  pivot_wider(
+    names_from = period,
+    values_from = c(
+      poverty_rate,
+      poverty_moe,
+      cv,
+      reliability
+    )
+  )
+```
+
+```{r}
+poverty_tested <- poverty_wide %>%
+  mutate(
+    change = `poverty_rate_2013-2017`- `poverty_rate_2006-2010`,
+    se_1 = `poverty_moe_2006-2010` / 1.645,
+    se_2 = `poverty_moe_2013-2017` / 1.645,
+    se_diff = sqrt(se_1^2 + se_2^2),
+    moe_diff = se_diff * 1.645,
+    z = change / se_diff,
+    significant = abs(z) > 1.645
+  )
+```
+
+
+
+```{r}
+#| include: false
+
+poverty_tested %>%
+  filter(is.na(significant)) %>%
+  select(GEOID, NAME)
+```
+
+```{r}
+#| include: false
+
+poverty_tested %>%
+  filter(is.na(significant))%>%
+  select(
+    GEOID,
+    NAME,
+    `poverty_rate_2006-2010`,
+    `poverty_rate_2013-2017`,
+    `poverty_moe_2006-2010`,
+    `poverty_moe_2013-2017`
+  )
+```
+
+```{r}
+#| include: false
+
+poverty_change %>%
+  filter(GEOID %in% poverty_tested$GEOID[is.na(poverty_tested$significant)]) %>%
+  select(
+    GEOID,
+    NAME,
+    period,
+    totalE,
+    below_povertyE
+  )
+```
+Eight tracts could not be tested because their poverty universe population was zero in 2013–2017, producing undefined poverty rates (0/0). I therefore exclude these tracts from the significance count.
+
+```{r}
+#| include: false
+
+poverty_tested %>%
+  filter(!is.na(significant)) %>%
+  count(significant)
+```
+Among the 376 tracts that could be tested, 63 showed a statistically significant change in poverty rate, while 313 did not.
+
+```{r}
+poverty_tested %>%
+  filter(!is.na(significant), significant) %>%
+  filter(
+    `reliability_2006-2010` != "Unreliable",
+    `reliability_2013-2017` != "Unreliable"
+  ) %>%
+  mutate(
+    abs_change = abs(change),
+    NAME = str_remove(NAME, ", Philadelphia County, Pennsylvania"),
+    direction = if_else(change > 0, "Increase", "Decrease")
+  ) %>%
+  arrange(desc(abs_change)) %>%
+  slice_head(n = 20) %>%
+  ggplot(aes(x = reorder(NAME, change), y = change, fill = direction)) +
+  geom_col(width = 0.75) +
+  geom_errorbar(
+    aes(
+      ymin = change - moe_diff,
+      ymax = change + moe_diff
+    ),
+    width = 0.25,
+    linewidth = 0.4
+  ) +
+  geom_hline(
+    yintercept = 0,
+    linetype = "dashed",
+    linewidth = 0.5
+  ) +
+  coord_flip() +
+  scale_fill_manual(
+    values = c(
+      "Increase" = "#A65F46",
+      "Decrease" = "#3E5F7D"
+    )
+  ) +
+  scale_y_continuous(
+    labels = scales::percent_format(accuracy = 1)
+  ) +
+  labs(
+    title = "Largest Statistically Significant Changes in Poverty Rate",
+    subtitle = "Top 20 Philadelphia census tracts with reliable or somewhat reliable estimates",
+    x = NULL,
+    y = "Change in poverty rate",
+    fill = NULL
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "top",
+    plot.title = element_text(face = "bold"),
+    axis.text.y = element_text(size = 8)
+  )
+```
+
+```{r}
+#| include: false
+
+poverty_tested %>%
+  filter(GEOID == "42101980000") %>%
+  select(
+    GEOID,
+    NAME,
+    `poverty_rate_2006-2010`,
+    `poverty_rate_2013-2017`,
+    `cv_2006-2010`,
+    `cv_2013-2017`,
+    `reliability_2006-2010`,
+    `reliability_2013-2017`,
+    change,
+    significant
+  )
+```
+
+```{r}
+#| include: false
+
+reliability_table <- poverty_2017 %>%
+  select(
+    NAME,
+    poverty_rate,
+    poverty_moe,
+    cv,
+    reliability
+  ) %>%
+  arrange(desc(cv)) %>%
+  slice_head(n = 20)
+
+reliability_table %>%
+  gt() %>%
+  fmt_percent(
+    columns = c(poverty_rate, poverty_moe),
+    decimals = 1
+  ) %>%
+  fmt_number(
+    columns = cv,
+    decimals = 1
+  ) %>%
+  cols_label(
+    NAME = "Census Tract",
+    poverty_rate = "Poverty Rate",
+    poverty_moe = "MOE",
+    cv = "CV (%)",
+    reliability = "Reliability"
+  ) %>%
+  tab_header(
+    title = "Reliability of Poverty Rate Estimates",
+    subtitle = "20 Philadelphia census tracts with the highest CV, 2013–2017 ACS 5-year estimates"
+  ) %>%
+  tab_source_note(
+    "Reliability thresholds follow Jurjevich et al. (2018): CV < 12% reliable, 12–40% somewhat reliable, > 40% unreliable."
+  )
+```
+
+```{r}
+reliability_table <- poverty_2017 %>%
+  mutate(
+    dot = case_when(
+      cv < 12  ~ "🟢",
+      cv <= 40 ~ "🟡",
+      TRUE     ~ "🔴"
+    )
+  ) %>%
+  select(
+    dot,
+    NAME,
+    poverty_rate,
+    poverty_moe,
+    cv,
+    reliability
+  ) %>%
+  arrange(desc(cv)) %>%
+  slice_head(n = 20)
+
+reliability_table %>%
+  gt() %>%
+  fmt_percent(
+    columns = c(poverty_rate, poverty_moe),
+    decimals = 1
+  ) %>%
+  fmt_number(
+    columns = cv,
+    decimals = 1
+  ) %>%
+  cols_label(
+    dot = "",
+    NAME = "Census Tract",
+    poverty_rate = "Poverty Rate",
+    poverty_moe = "MOE",
+    cv = "CV (%)",
+    reliability = "Reliability"
+  ) %>%
+  cols_align(
+    align = "center",
+    columns = dot
+  ) %>%
+  tab_header(
+    title = "Reliability of Poverty Rate Estimates",
+    subtitle = "20 Philadelphia census tracts with the highest CV, 2013–2017 ACS 5-year estimates"
+  ) %>%
+  tab_source_note(
+    "Reliability thresholds follow Jurjevich et al. (2018): CV < 12% reliable, 12–40% somewhat reliable, > 40% unreliable."
+  )
+```
+
+```{r}
+poverty_tested %>%
+  filter(!is.na(significant)) %>%
+  mutate(
+    status = case_when(
+      significant == TRUE  ~ "Statistically significant",
+      significant == FALSE ~ "Not statistically significant"
+    )
+  ) %>%
+  count(status) %>%
+  ggplot(aes(x = status, y = n, fill = status)) +
+  geom_col(width = 0.65) +
+  scale_fill_manual(
+    values = c(
+      "Statistically significant" = "#A65F46",
+      "Not statistically significant" = "#3E5F7D"
+    )
+  ) +
+  labs(
+    title = "Most Philadelphia Tracts Did Not Show Detectable Change",
+    subtitle = "Change in poverty rate, 2006–2010 vs 2013–2017 ACS 5-year estimates",
+    x = NULL,
+    y = "Number of census tracts",
+    fill = NULL
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(face = "bold")
+  )
+```
+
+## Part 3 — Adjudicate
+The article's specific claim about Eastwick cannot be directly determined from this tract-level analysis because the article does not report which census tracts were aggregated to define the neighborhood.
+
+At the tract level, 63 of 376 testable census tracts showed a statistically significant change in poverty rate, while 313 did not. This suggests that broad claims of neighborhood change should be interpreted cautiously because most tract-level changes were not statistically distinguishable from zero.
+
+## Part 4 — Rewrite
+Philadelphia's tract-level poverty data show that changes over time are uneven and often uncertain. Between the 2006–2010 and 2013–2017 ACS 5-year periods, only 63 of 376 testable census tracts showed a statistically significant change in poverty rate.
+
+Because the article does not identify which census tracts were combined to define Eastwick, its specific neighborhood-level claim cannot be directly verified with the available tract-level data. The evidence therefore supports a more cautious conclusion: poverty changed significantly in some parts of Philadelphia, but most tract-level changes were not statistically distinguishable from zero.

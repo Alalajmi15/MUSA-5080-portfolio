@@ -1,0 +1,418 @@
+# Week 4 — Working with Spatial Data in R
+
+# الأسبوع الرابع — العمل مع البيانات المكانية في R
+
+
+## 1. Spatial Data and sf
+
+Spatial data is data that includes information about location.
+
+البيانات المكانية هي بيانات تحتوي على معلومات عن الموقع.
+
+In R, spatial data is commonly handled using the sf package.
+
+في R يتم التعامل مع البيانات المكانية عادة باستخدام حزمة sf.
+
+An sf object is basically a normal data frame with an additional geometry column.
+
+كائن sf هو بشكل أساسي جدول بيانات عادي يحتوي على عمود إضافي يسمى geometry.
+
+The geometry column stores the spatial shape of each observation.
+
+عمود geometry يخزن الشكل المكاني لكل مشاهدة.
+
+Geometry can represent points, lines, or polygons.
+
+الهندسة المكانية يمكن أن تمثل نقاطا أو خطوطا أو مضلعات.
+
+The geometry column usually stays attached to the data even when other columns are selected.
+
+عمود geometry عادة يبقى مرتبطا بالبيانات حتى عند اختيار أعمدة أخرى.
+
+If geometry is no longer needed, it can be removed using st_drop_geometry.
+
+إذا لم نعد بحاجة إلى الهندسة المكانية يمكن إزالتها باستخدام st_drop_geometry.
+
+
+## 2. Coordinate Reference Systems
+
+A Coordinate Reference System tells R how spatial coordinates should be interpreted.
+
+نظام الإسناد الإحداثي يحدد لـ R كيفية تفسير الإحداثيات المكانية.
+
+The abbreviation is CRS.
+
+الاختصار هو CRS.
+
+There are two main types of coordinate systems.
+
+يوجد نوعان رئيسيان من أنظمة الإحداثيات.
+
+A geographic coordinate system uses longitude and latitude.
+
+نظام الإحداثيات الجغرافي يستخدم خطوط الطول والعرض.
+
+Its units are usually degrees.
+
+وحداته تكون عادة بالدرجات.
+
+A projected coordinate system represents the Earth on a flat surface using X and Y coordinates.
+
+نظام الإحداثيات المسقط يمثل الأرض على سطح مستو باستخدام إحداثيات X و Y.
+
+Its units can be feet or meters.
+
+وحداته يمكن أن تكون بالقدم أو بالمتر.
+
+Projected systems are generally better for measuring distance and area.
+
+الأنظمة المسقطة تكون أفضل عادة لحساب المسافات والمساحات.
+
+
+## 3. Projections and Distortion
+
+The Earth is curved, but maps are flat.
+
+الأرض منحنية ولكن الخرائط مسطحة.
+
+Because of this, every map projection creates some type of distortion.
+
+لهذا السبب كل إسقاط خرائطي ينتج نوعا من التشوه.
+
+A projection may focus on preserving shape, area, distance, or direction.
+
+قد يركز الإسقاط على الحفاظ على الشكل أو المساحة أو المسافة أو الاتجاه.
+
+A conformal projection focuses on shape.
+
+الإسقاط المتوافق يركز على الحفاظ على الشكل.
+
+An equal-area projection focuses on area.
+
+الإسقاط متساوي المساحة يركز على الحفاظ على المساحة.
+
+An equidistant projection focuses on certain distances.
+
+الإسقاط متساوي المسافة يركز على الحفاظ على بعض المسافات.
+
+Common projection concepts include cylindrical, conic, and transverse cylindrical projections.
+
+من أشكال الإسقاط الشائعة الإسقاط الأسطواني والمخروطي والأسطواني المستعرض.
+
+
+## 4. CRS Rules for Spatial Analysis
+
+The most important rule is that spatial layers should use the same CRS before spatial analysis.
+
+أهم قاعدة هي أن الطبقات المكانية يجب أن تستخدم نفس نظام الإحداثيات قبل التحليل المكاني.
+
+The general workflow is:
+
+الترتيب العام هو:
+
+Check the CRS.
+
+تحقق من نظام الإحداثيات.
+
+Transform the CRS if necessary.
+
+حول نظام الإحداثيات إذا كان ذلك ضروريا.
+
+Then perform measurements.
+
+بعد ذلك قم بالقياسات.
+
+A map can look correct even when the CRS is inappropriate for measurement.
+
+قد تبدو الخريطة صحيحة حتى عندما يكون نظام الإحداثيات غير مناسب للقياس.
+
+Matching CRS values are also not enough if the units are degrees.
+
+تطابق نظام الإحداثيات لا يكفي إذا كانت الوحدات بالدرجات.
+
+Distances, buffers, and areas should normally be calculated using a projected CRS.
+
+المسافات والمناطق العازلة والمساحات يجب عادة حسابها باستخدام نظام إحداثيات مسقط.
+
+
+## 5. Philadelphia CRS
+
+For local work in Philadelphia, the class uses Pennsylvania South State Plane.
+
+للعمل المحلي في فيلادلفيا يستخدم الكلاس نظام Pennsylvania South State Plane.
+
+EPSG 2272 uses US feet.
+
+EPSG 2272 يستخدم القدم الأمريكية.
+
+Another version of the same general State Plane zone uses meters.
+
+يوجد إصدار آخر من نفس منطقة State Plane يستخدم المتر.
+
+The unit matters because a distance value has a different meaning in feet and meters.
+
+وحدة القياس مهمة لأن قيمة المسافة تختلف إذا كانت بالقدم أو بالمتر.
+
+Always check the units before calculating distance, area, or buffers.
+
+تحقق دائما من الوحدة قبل حساب المسافات أو المساحات أو المناطق العازلة.
+
+
+## 6. Joining Data
+
+There are two important ways to connect data.
+
+يوجد طريقتان مهمتان لربط البيانات.
+
+The first is joining by an identifier.
+
+الطريقة الأولى هي الربط باستخدام معرف.
+
+For Census data, GEOID is commonly used.
+
+في بيانات التعداد يتم استخدام GEOID بشكل شائع.
+
+A left join keeps all rows from the first table and adds matching information from the second table.
+
+الربط من النوع left join يحتفظ بجميع صفوف الجدول الأول ويضيف البيانات المطابقة من الجدول الثاني.
+
+If no match exists, the result can contain NA.
+
+إذا لم يوجد تطابق فقد تظهر القيمة NA.
+
+The second method is joining by location.
+
+الطريقة الثانية هي الربط حسب الموقع.
+
+A spatial join can determine which tract contains a station or another spatial feature.
+
+الربط المكاني يمكن أن يحدد منطقة التعداد التي تحتوي على محطة أو عنصر مكاني آخر.
+
+In spatial analysis, both joining by ID and joining by location are useful.
+
+في التحليل المكاني نحتاج إلى الربط حسب المعرف والربط حسب الموقع.
+
+
+## 7. Spatial Relationships
+
+Spatial functions can test how geometries relate to each other.
+
+الدوال المكانية يمكن أن تختبر العلاقة بين الأشكال.
+
+st_intersects checks whether two geometries intersect in any way.
+
+st_intersects تتحقق مما إذا كان هناك أي تقاطع بين شكلين.
+
+st_touches checks whether geometries touch at their boundaries.
+
+st_touches تتحقق مما إذا كانت الأشكال تتلامس عند الحدود.
+
+st_within checks whether one geometry is completely inside another.
+
+st_within تتحقق مما إذا كان شكل موجودا بالكامل داخل شكل آخر.
+
+These tests usually produce logical results such as TRUE or FALSE.
+
+هذه الاختبارات تنتج عادة نتائج منطقية مثل TRUE أو FALSE.
+
+A spatial feature also intersects itself.
+
+العنصر المكاني يتقاطع أيضا مع نفسه.
+
+
+## 8. Filter, Intersection, and Union
+
+st_filter selects whole spatial features.
+
+st_filter تختار العناصر المكانية كاملة.
+
+The geometry itself is not cut.
+
+الشكل نفسه لا يتم قصه.
+
+st_intersection creates the actual overlapping area between geometries.
+
+st_intersection تنشئ منطقة التداخل الفعلية بين الأشكال.
+
+This can change the shape of the original geometry.
+
+هذا يمكن أن يغير شكل الهندسة الأصلية.
+
+st_union combines multiple geometries into one geometry.
+
+st_union تدمج عدة أشكال مكانية في شكل واحد.
+
+A useful example is combining many station service areas into one larger service zone.
+
+من الأمثلة المفيدة دمج مناطق الخدمة حول عدة محطات في منطقة خدمة واحدة.
+
+
+## 9. Buffers and Transit Access
+
+A buffer creates an area around a spatial feature.
+
+المنطقة العازلة تنشئ مساحة حول عنصر مكاني.
+
+A buffer can be used to represent a service area around a transit station.
+
+يمكن استخدام المنطقة العازلة لتمثيل منطقة خدمة حول محطة نقل.
+
+In US feet, half a mile equals 2640 feet.
+
+عند استخدام القدم الأمريكية فإن نصف ميل يساوي 2640 قدما.
+
+The CRS units must be checked before using this distance.
+
+يجب التأكد من وحدة نظام الإحداثيات قبل استخدام هذه المسافة.
+
+Transit access can be defined in different ways.
+
+يمكن تعريف الوصول إلى النقل بعدة طرق.
+
+One definition is whether the tract centroid is within a certain distance of a station.
+
+أحد التعريفات هو أن يكون مركز منطقة التعداد ضمن مسافة معينة من المحطة.
+
+Another definition is whether the tract touches the service zone.
+
+تعريف آخر هو أن تلامس منطقة التعداد منطقة الخدمة.
+
+Another definition is the percentage of the tract area covered by the service zone.
+
+تعريف آخر هو نسبة مساحة منطقة التعداد الموجودة داخل منطقة الخدمة.
+
+Different definitions can produce different results.
+
+التعريفات المختلفة يمكن أن تنتج نتائج مختلفة.
+
+Choosing a spatial definition is therefore part of the analytical and policy decision.
+
+اختيار التعريف المكاني يعتبر جزءا من القرار التحليلي والسياساتي.
+
+
+## 10. Distance and Nearest Features
+
+st_distance calculates spatial distance.
+
+st_distance تحسب المسافة المكانية.
+
+When many features exist in both layers, the result can be a distance matrix.
+
+عندما توجد عدة عناصر في كل طبقة قد تكون النتيجة مصفوفة مسافات.
+
+A distance matrix compares every feature in one layer with every feature in the other layer.
+
+مصفوفة المسافات تقارن كل عنصر في طبقة مع كل عنصر في الطبقة الأخرى.
+
+Sometimes we only need the nearest feature.
+
+في بعض الأحيان نحتاج فقط إلى أقرب عنصر.
+
+st_nearest_feature identifies the nearest spatial feature.
+
+st_nearest_feature تحدد أقرب عنصر مكاني.
+
+A tract centroid can be used as a representative center point when measuring distance to a station.
+
+يمكن استخدام مركز منطقة التعداد كنقطة تمثل المنطقة عند حساب المسافة إلى المحطة.
+
+In EPSG 2272, distances are measured in US feet.
+
+في EPSG 2272 يتم قياس المسافات بالقدم الأمريكية.
+
+There are 5280 feet in one mile.
+
+يوجد 5280 قدما في الميل الواحد.
+
+
+## 11. Areas and Coverage
+
+st_area calculates the area of a spatial feature.
+
+st_area تحسب مساحة العنصر المكاني.
+
+With EPSG 2272, areas are measured in square feet.
+
+عند استخدام EPSG 2272 يتم قياس المساحات بالقدم المربع.
+
+One acre equals 43,560 square feet.
+
+الفدان الواحد يساوي 43,560 قدما مربعا.
+
+One square mile equals 27,878,400 square feet.
+
+الميل المربع الواحد يساوي 27,878,400 قدما مربعا.
+
+Area can also be used to calculate how much of a tract is covered by a service zone.
+
+يمكن استخدام المساحة لحساب نسبة منطقة التعداد التي تغطيها منطقة الخدمة.
+
+When two areas use the same unit, the units cancel when calculating a percentage.
+
+عندما تستخدم المساحتان نفس الوحدة فإن الوحدات تلغى عند حساب النسبة.
+
+
+## 12. Mapping Spatial Data
+
+Spatial data can be mapped using geometry.
+
+يمكن رسم البيانات المكانية باستخدام الهندسة المكانية.
+
+A good map should focus attention on the important information.
+
+الخريطة الجيدة يجب أن توجه الانتباه إلى المعلومات المهمة.
+
+Unnecessary grid lines, axes, and heavy polygon borders can make a map harder to read.
+
+خطوط الشبكة والمحاور وحدود المضلعات السميكة قد تجعل الخريطة أصعب في القراءة.
+
+Missing values should be shown clearly instead of silently disappearing.
+
+يجب إظهار القيم المفقودة بوضوح بدلا من اختفائها بدون تفسير.
+
+Continuous colors are useful for showing gradual change.
+
+الألوان المستمرة مفيدة لعرض التغير التدريجي.
+
+Classed maps divide values into a small number of groups.
+
+الخرائط المصنفة تقسم القيم إلى عدد صغير من الفئات.
+
+Around four to six meaningful classes are usually easier to interpret.
+
+استخدام أربع إلى ست فئات ذات معنى يكون عادة أسهل في التفسير.
+
+For choropleth maps, rates are usually more meaningful than raw counts.
+
+في الخرائط التدرجية تكون النسب عادة أكثر معنى من الأعداد الخام.
+
+
+## 13. Main Week 4 Takeaways
+
+An sf object is still a data frame, but it also contains geometry.
+
+كائن sf لا يزال جدول بيانات ولكنه يحتوي أيضا على هندسة مكانية.
+
+CRS tells us how the coordinates should be interpreted.
+
+CRS يحدد كيفية تفسير الإحداثيات.
+
+Use the same CRS before comparing spatial layers.
+
+استخدم نفس نظام الإحداثيات قبل مقارنة الطبقات المكانية.
+
+Use projected units before measuring distance or area.
+
+استخدم نظام إحداثيات مسقط قبل حساب المسافات أو المساحات.
+
+Know the difference between joining by ID and joining by location.
+
+اعرف الفرق بين الربط باستخدام المعرف والربط باستخدام الموقع.
+
+Know the difference between selecting whole features and cutting overlapping geometry.
+
+اعرف الفرق بين اختيار الأشكال كاملة وقص منطقة التداخل.
+
+Spatial definitions can change the answer to a policy question.
+
+التعريفات المكانية يمكن أن تغير الإجابة عن سؤال سياساتي.

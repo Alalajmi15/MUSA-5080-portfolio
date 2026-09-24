@@ -410,7 +410,7 @@
     "href": "weekly-notes/index.html",
     "title": "Weekly Notes",
     "section": "",
-    "text": "Notes from each week of MUSA 5080. New entries appear here automatically — add a .qmd file to this folder and render.\n\n\n\n\n\n\n\n\n\n\n\nweek-03\n\n\n\n\n\n\n\n\n\n\n\n\n\nWeek 2: dplyr and Census Data\n\n\nTable functions and acs date\n\n\n\n\n\nSep 4, 2026\n\n\n\n\n\n\n\nWeek 1: Getting Set Up\n\n\nFirst impressions and getting the portfolio workflow running.\n\n\n\n\n\nAug 28, 2026\n\n\n\n\n\nNo matching items"
+    "text": "Notes from each week of MUSA 5080. New entries appear here automatically — add a .qmd file to this folder and render.\n\n\n\n\n\n\n\n\n\n\n\nweek-03\n\n\n\n\n\n\n\n\n\n\n\n\n\nWeek 4 — Working with Spatial Data in R\n\n\n\n\n\n\n\n\n\n\n\n\n\nWeek 2: dplyr and Census Data\n\n\nTable functions and acs date\n\n\n\n\n\nSep 4, 2026\n\n\n\n\n\n\n\nWeek 1: Getting Set Up\n\n\nFirst impressions and getting the portfolio workflow running.\n\n\n\n\n\nAug 28, 2026\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "weekly-notes/week-02.html",
@@ -530,5 +530,103 @@
     "title": "Week 2: dplyr and Census Data",
     "section": "ملاحظاتي",
     "text": "ملاحظاتي\n\n\nكتابة الأوامر وحفظها\n\nنافذة الأوامر مناسبة لتجربة التعليمات بسرعة، لكن ما أكتبه فيها لا يُحفظ تلقائيًا.\nملف الأوامر يحفظ الكود حتى أستطيع الرجوع إليه وتشغيله مرة أخرى.\nيمكن وضع الكود داخل مستند يحتوي أيضًا على الشرح والنتائج.\nالنص المكتوب بعد علامة التعليق يشرح الكود ولا يتم تشغيله.\n\n\n\nمكونات الأمر\n\nالكائن هو الاسم الذي نستخدمه لحفظ البيانات أو النتيجة.\nسهم الإسناد ينقل النتيجة ويحفظها داخل الكائن.\nالدالة هي العملية التي نريد تنفيذها على البيانات.\nالمدخلات هي البيانات التي ستُطبق عليها العملية.\nالوسيط يحدد الشرط أو الخيار المستخدم داخل الدالة.\n\n\n\nالحزم البرمجية\n\nالحزمة البرمجية تضيف أدوات ودوال جديدة إلى البرنامج.\nيتم تثبيت الحزمة عادة مرة واحدة على الجهاز.\nيجب تحميل الحزمة عند بدء جلسة جديدة قبل استخدام دوالها.\nإذا ظهرت رسالة بأن الدالة غير موجودة، فقد يكون السبب أن الحزمة لم تُحمّل.\n\n\n\nتنظيم البيانات\n\nيتكون جدول البيانات من صفوف وأعمدة.\nيمثل كل صف مشاهدة واحدة، مثل مقاطعة واحدة.\nيمثل كل عمود متغيرًا، مثل عدد السكان أو قيمة المنزل أو هامش الخطأ.\nيمكن اختيار الصفوف التي تحقق شرطًا محددًا.\nيمكن اختيار الأعمدة المطلوبة فقط.\nيمكن إنشاء عمود جديد من خلال عملية حسابية.\nيمكن ترتيب النتائج من الأصغر إلى الأكبر أو من الأكبر إلى الأصغر.\nيمكن تقسيم البيانات إلى مجموعات ثم حساب ملخص لكل مجموعة.\n\n\n\nتسلسل خطوات التحليل\n\nيمكن ربط عدة عمليات بحيث تنتقل نتيجة الخطوة الأولى إلى الخطوة التالية.\nيساعد هذا الأسلوب على قراءة التحليل بالترتيب بدل إنشاء نتيجة منفصلة لكل خطوة.\nفي الواجب قمنا بحساب نسبة هامش الخطأ، ثم ترتيب المقاطعات، ثم تصنيفها حسب الموثوقية.\n\n\n\nبيانات السكان\n\nيتم إجراء التعداد السكاني الشامل كل عشر سنوات بهدف عد السكان.\nمسح المجتمع الأمريكي يُجرى بصورة مستمرة ويعتمد على عينة من المجتمع.\nيوفر المسح معلومات عن السكان والسكن والدخل والتعليم وخصائص أخرى.\nالبيانات المنشورة من المسح هي تقديرات وليست أعدادًا مؤكدة بالكامل.\nيأتي كل تقدير مع هامش خطأ يوضح مقدار عدم اليقين فيه.\nتشمل تقديرات السنوات الخمس المجتمعات والمناطق الجغرافية الصغيرة.\nلا تعني تقديرات السنوات الخمس أنها بيانات سنة واحدة، بل تجمع استجابات خلال خمس سنوات.\n\n\n\nالمستويات الجغرافية\n\nتبدأ المستويات الجغرافية بالولاية ثم المقاطعة ثم المناطق الإحصائية الأصغر.\nكلما صغر المستوى الجغرافي، صغر حجم العينة غالبًا وارتفع هامش الخطأ.\nقد تتغير الحدود الجغرافية مع مرور الوقت، ولذلك يجب الحذر عند المقارنة بين سنوات مختلفة.\n\n\n\nالتقدير وهامش الخطأ\n\nالتقدير هو القيمة التي ينتجها المسح بناءً على العينة.\nهامش الخطأ يوضح مقدار احتمال اختلاف القيمة الحقيقية عن التقدير.\nلا تكفي مقارنة هامش الخطأ كرقم فقط، لأن حجم التقدير يختلف بين المقاطعات.\nيمكن قسمة هامش الخطأ على التقدير وضرب الناتج في مئة للحصول على نسبة مئوية.\nكلما ارتفعت هذه النسبة، انخفضت موثوقية التقدير.\nالمقاطعات الصغيرة قد تظهر فيها نسب خطأ أعلى بسبب قلة عدد المشاهدات في العينة.\n\n\n\nما تعلمته من التطبيق\n\nتعلمت أن الحصول على البيانات ليس نهاية التحليل؛ يجب تقييم دقتها قبل استخدامها.\nأظهرت النتائج أن المقاطعات ذات عدد السكان الأقل كانت أقل موثوقية في المتوسط.\nلا ينبغي معاملة جميع المقاطعات كأن بياناتها متساوية في الدقة.\nقد يؤدي تجاهل عدم اليقين إلى توزيع غير عادل للتمويل أو اتخاذ قرار غير مناسب.\nيرتبط هذا بخبرتي في الجودة وإدارة المخاطر، لأن القرار الجيد يعتمد على بيانات موثوقة.\nيمكن التعامل مع هامش الخطأ كمؤشر للمخاطر يساعد على تحديد النتائج التي تحتاج إلى حذر أكبر."
+  },
+  {
+    "objectID": "weekly-notes/week-04.html",
+    "href": "weekly-notes/week-04.html",
+    "title": "",
+    "section": "",
+    "text": "Code"
+  },
+  {
+    "objectID": "weekly-notes/week-04.html#spatial-data-and-sf",
+    "href": "weekly-notes/week-04.html#spatial-data-and-sf",
+    "title": "",
+    "section": "1. Spatial Data and sf",
+    "text": "1. Spatial Data and sf\nSpatial data is data that includes information about location.\nالبيانات المكانية هي بيانات تحتوي على معلومات عن الموقع.\nIn R, spatial data is commonly handled using the sf package.\nفي R يتم التعامل مع البيانات المكانية عادة باستخدام حزمة sf.\nAn sf object is basically a normal data frame with an additional geometry column.\nكائن sf هو بشكل أساسي جدول بيانات عادي يحتوي على عمود إضافي يسمى geometry.\nThe geometry column stores the spatial shape of each observation.\nعمود geometry يخزن الشكل المكاني لكل مشاهدة.\nGeometry can represent points, lines, or polygons.\nالهندسة المكانية يمكن أن تمثل نقاطا أو خطوطا أو مضلعات.\nThe geometry column usually stays attached to the data even when other columns are selected.\nعمود geometry عادة يبقى مرتبطا بالبيانات حتى عند اختيار أعمدة أخرى.\nIf geometry is no longer needed, it can be removed using st_drop_geometry.\nإذا لم نعد بحاجة إلى الهندسة المكانية يمكن إزالتها باستخدام st_drop_geometry."
+  },
+  {
+    "objectID": "weekly-notes/week-04.html#coordinate-reference-systems",
+    "href": "weekly-notes/week-04.html#coordinate-reference-systems",
+    "title": "",
+    "section": "2. Coordinate Reference Systems",
+    "text": "2. Coordinate Reference Systems\nA Coordinate Reference System tells R how spatial coordinates should be interpreted.\nنظام الإسناد الإحداثي يحدد لـ R كيفية تفسير الإحداثيات المكانية.\nThe abbreviation is CRS.\nالاختصار هو CRS.\nThere are two main types of coordinate systems.\nيوجد نوعان رئيسيان من أنظمة الإحداثيات.\nA geographic coordinate system uses longitude and latitude.\nنظام الإحداثيات الجغرافي يستخدم خطوط الطول والعرض.\nIts units are usually degrees.\nوحداته تكون عادة بالدرجات.\nA projected coordinate system represents the Earth on a flat surface using X and Y coordinates.\nنظام الإحداثيات المسقط يمثل الأرض على سطح مستو باستخدام إحداثيات X و Y.\nIts units can be feet or meters.\nوحداته يمكن أن تكون بالقدم أو بالمتر.\nProjected systems are generally better for measuring distance and area.\nالأنظمة المسقطة تكون أفضل عادة لحساب المسافات والمساحات."
+  },
+  {
+    "objectID": "weekly-notes/week-04.html#projections-and-distortion",
+    "href": "weekly-notes/week-04.html#projections-and-distortion",
+    "title": "",
+    "section": "3. Projections and Distortion",
+    "text": "3. Projections and Distortion\nThe Earth is curved, but maps are flat.\nالأرض منحنية ولكن الخرائط مسطحة.\nBecause of this, every map projection creates some type of distortion.\nلهذا السبب كل إسقاط خرائطي ينتج نوعا من التشوه.\nA projection may focus on preserving shape, area, distance, or direction.\nقد يركز الإسقاط على الحفاظ على الشكل أو المساحة أو المسافة أو الاتجاه.\nA conformal projection focuses on shape.\nالإسقاط المتوافق يركز على الحفاظ على الشكل.\nAn equal-area projection focuses on area.\nالإسقاط متساوي المساحة يركز على الحفاظ على المساحة.\nAn equidistant projection focuses on certain distances.\nالإسقاط متساوي المسافة يركز على الحفاظ على بعض المسافات.\nCommon projection concepts include cylindrical, conic, and transverse cylindrical projections.\nمن أشكال الإسقاط الشائعة الإسقاط الأسطواني والمخروطي والأسطواني المستعرض."
+  },
+  {
+    "objectID": "weekly-notes/week-04.html#crs-rules-for-spatial-analysis",
+    "href": "weekly-notes/week-04.html#crs-rules-for-spatial-analysis",
+    "title": "",
+    "section": "4. CRS Rules for Spatial Analysis",
+    "text": "4. CRS Rules for Spatial Analysis\nThe most important rule is that spatial layers should use the same CRS before spatial analysis.\nأهم قاعدة هي أن الطبقات المكانية يجب أن تستخدم نفس نظام الإحداثيات قبل التحليل المكاني.\nThe general workflow is:\nالترتيب العام هو:\nCheck the CRS.\nتحقق من نظام الإحداثيات.\nTransform the CRS if necessary.\nحول نظام الإحداثيات إذا كان ذلك ضروريا.\nThen perform measurements.\nبعد ذلك قم بالقياسات.\nA map can look correct even when the CRS is inappropriate for measurement.\nقد تبدو الخريطة صحيحة حتى عندما يكون نظام الإحداثيات غير مناسب للقياس.\nMatching CRS values are also not enough if the units are degrees.\nتطابق نظام الإحداثيات لا يكفي إذا كانت الوحدات بالدرجات.\nDistances, buffers, and areas should normally be calculated using a projected CRS.\nالمسافات والمناطق العازلة والمساحات يجب عادة حسابها باستخدام نظام إحداثيات مسقط."
+  },
+  {
+    "objectID": "weekly-notes/week-04.html#philadelphia-crs",
+    "href": "weekly-notes/week-04.html#philadelphia-crs",
+    "title": "",
+    "section": "5. Philadelphia CRS",
+    "text": "5. Philadelphia CRS\nFor local work in Philadelphia, the class uses Pennsylvania South State Plane.\nللعمل المحلي في فيلادلفيا يستخدم الكلاس نظام Pennsylvania South State Plane.\nEPSG 2272 uses US feet.\nEPSG 2272 يستخدم القدم الأمريكية.\nAnother version of the same general State Plane zone uses meters.\nيوجد إصدار آخر من نفس منطقة State Plane يستخدم المتر.\nThe unit matters because a distance value has a different meaning in feet and meters.\nوحدة القياس مهمة لأن قيمة المسافة تختلف إذا كانت بالقدم أو بالمتر.\nAlways check the units before calculating distance, area, or buffers.\nتحقق دائما من الوحدة قبل حساب المسافات أو المساحات أو المناطق العازلة."
+  },
+  {
+    "objectID": "weekly-notes/week-04.html#joining-data",
+    "href": "weekly-notes/week-04.html#joining-data",
+    "title": "",
+    "section": "6. Joining Data",
+    "text": "6. Joining Data\nThere are two important ways to connect data.\nيوجد طريقتان مهمتان لربط البيانات.\nThe first is joining by an identifier.\nالطريقة الأولى هي الربط باستخدام معرف.\nFor Census data, GEOID is commonly used.\nفي بيانات التعداد يتم استخدام GEOID بشكل شائع.\nA left join keeps all rows from the first table and adds matching information from the second table.\nالربط من النوع left join يحتفظ بجميع صفوف الجدول الأول ويضيف البيانات المطابقة من الجدول الثاني.\nIf no match exists, the result can contain NA.\nإذا لم يوجد تطابق فقد تظهر القيمة NA.\nThe second method is joining by location.\nالطريقة الثانية هي الربط حسب الموقع.\nA spatial join can determine which tract contains a station or another spatial feature.\nالربط المكاني يمكن أن يحدد منطقة التعداد التي تحتوي على محطة أو عنصر مكاني آخر.\nIn spatial analysis, both joining by ID and joining by location are useful.\nفي التحليل المكاني نحتاج إلى الربط حسب المعرف والربط حسب الموقع."
+  },
+  {
+    "objectID": "weekly-notes/week-04.html#spatial-relationships",
+    "href": "weekly-notes/week-04.html#spatial-relationships",
+    "title": "",
+    "section": "7. Spatial Relationships",
+    "text": "7. Spatial Relationships\nSpatial functions can test how geometries relate to each other.\nالدوال المكانية يمكن أن تختبر العلاقة بين الأشكال.\nst_intersects checks whether two geometries intersect in any way.\nst_intersects تتحقق مما إذا كان هناك أي تقاطع بين شكلين.\nst_touches checks whether geometries touch at their boundaries.\nst_touches تتحقق مما إذا كانت الأشكال تتلامس عند الحدود.\nst_within checks whether one geometry is completely inside another.\nst_within تتحقق مما إذا كان شكل موجودا بالكامل داخل شكل آخر.\nThese tests usually produce logical results such as TRUE or FALSE.\nهذه الاختبارات تنتج عادة نتائج منطقية مثل TRUE أو FALSE.\nA spatial feature also intersects itself.\nالعنصر المكاني يتقاطع أيضا مع نفسه."
+  },
+  {
+    "objectID": "weekly-notes/week-04.html#filter-intersection-and-union",
+    "href": "weekly-notes/week-04.html#filter-intersection-and-union",
+    "title": "",
+    "section": "8. Filter, Intersection, and Union",
+    "text": "8. Filter, Intersection, and Union\nst_filter selects whole spatial features.\nst_filter تختار العناصر المكانية كاملة.\nThe geometry itself is not cut.\nالشكل نفسه لا يتم قصه.\nst_intersection creates the actual overlapping area between geometries.\nst_intersection تنشئ منطقة التداخل الفعلية بين الأشكال.\nThis can change the shape of the original geometry.\nهذا يمكن أن يغير شكل الهندسة الأصلية.\nst_union combines multiple geometries into one geometry.\nst_union تدمج عدة أشكال مكانية في شكل واحد.\nA useful example is combining many station service areas into one larger service zone.\nمن الأمثلة المفيدة دمج مناطق الخدمة حول عدة محطات في منطقة خدمة واحدة."
+  },
+  {
+    "objectID": "weekly-notes/week-04.html#buffers-and-transit-access",
+    "href": "weekly-notes/week-04.html#buffers-and-transit-access",
+    "title": "",
+    "section": "9. Buffers and Transit Access",
+    "text": "9. Buffers and Transit Access\nA buffer creates an area around a spatial feature.\nالمنطقة العازلة تنشئ مساحة حول عنصر مكاني.\nA buffer can be used to represent a service area around a transit station.\nيمكن استخدام المنطقة العازلة لتمثيل منطقة خدمة حول محطة نقل.\nIn US feet, half a mile equals 2640 feet.\nعند استخدام القدم الأمريكية فإن نصف ميل يساوي 2640 قدما.\nThe CRS units must be checked before using this distance.\nيجب التأكد من وحدة نظام الإحداثيات قبل استخدام هذه المسافة.\nTransit access can be defined in different ways.\nيمكن تعريف الوصول إلى النقل بعدة طرق.\nOne definition is whether the tract centroid is within a certain distance of a station.\nأحد التعريفات هو أن يكون مركز منطقة التعداد ضمن مسافة معينة من المحطة.\nAnother definition is whether the tract touches the service zone.\nتعريف آخر هو أن تلامس منطقة التعداد منطقة الخدمة.\nAnother definition is the percentage of the tract area covered by the service zone.\nتعريف آخر هو نسبة مساحة منطقة التعداد الموجودة داخل منطقة الخدمة.\nDifferent definitions can produce different results.\nالتعريفات المختلفة يمكن أن تنتج نتائج مختلفة.\nChoosing a spatial definition is therefore part of the analytical and policy decision.\nاختيار التعريف المكاني يعتبر جزءا من القرار التحليلي والسياساتي."
+  },
+  {
+    "objectID": "weekly-notes/week-04.html#distance-and-nearest-features",
+    "href": "weekly-notes/week-04.html#distance-and-nearest-features",
+    "title": "",
+    "section": "10. Distance and Nearest Features",
+    "text": "10. Distance and Nearest Features\nst_distance calculates spatial distance.\nst_distance تحسب المسافة المكانية.\nWhen many features exist in both layers, the result can be a distance matrix.\nعندما توجد عدة عناصر في كل طبقة قد تكون النتيجة مصفوفة مسافات.\nA distance matrix compares every feature in one layer with every feature in the other layer.\nمصفوفة المسافات تقارن كل عنصر في طبقة مع كل عنصر في الطبقة الأخرى.\nSometimes we only need the nearest feature.\nفي بعض الأحيان نحتاج فقط إلى أقرب عنصر.\nst_nearest_feature identifies the nearest spatial feature.\nst_nearest_feature تحدد أقرب عنصر مكاني.\nA tract centroid can be used as a representative center point when measuring distance to a station.\nيمكن استخدام مركز منطقة التعداد كنقطة تمثل المنطقة عند حساب المسافة إلى المحطة.\nIn EPSG 2272, distances are measured in US feet.\nفي EPSG 2272 يتم قياس المسافات بالقدم الأمريكية.\nThere are 5280 feet in one mile.\nيوجد 5280 قدما في الميل الواحد."
+  },
+  {
+    "objectID": "weekly-notes/week-04.html#areas-and-coverage",
+    "href": "weekly-notes/week-04.html#areas-and-coverage",
+    "title": "",
+    "section": "11. Areas and Coverage",
+    "text": "11. Areas and Coverage\nst_area calculates the area of a spatial feature.\nst_area تحسب مساحة العنصر المكاني.\nWith EPSG 2272, areas are measured in square feet.\nعند استخدام EPSG 2272 يتم قياس المساحات بالقدم المربع.\nOne acre equals 43,560 square feet.\nالفدان الواحد يساوي 43,560 قدما مربعا.\nOne square mile equals 27,878,400 square feet.\nالميل المربع الواحد يساوي 27,878,400 قدما مربعا.\nArea can also be used to calculate how much of a tract is covered by a service zone.\nيمكن استخدام المساحة لحساب نسبة منطقة التعداد التي تغطيها منطقة الخدمة.\nWhen two areas use the same unit, the units cancel when calculating a percentage.\nعندما تستخدم المساحتان نفس الوحدة فإن الوحدات تلغى عند حساب النسبة."
+  },
+  {
+    "objectID": "weekly-notes/week-04.html#mapping-spatial-data",
+    "href": "weekly-notes/week-04.html#mapping-spatial-data",
+    "title": "",
+    "section": "12. Mapping Spatial Data",
+    "text": "12. Mapping Spatial Data\nSpatial data can be mapped using geometry.\nيمكن رسم البيانات المكانية باستخدام الهندسة المكانية.\nA good map should focus attention on the important information.\nالخريطة الجيدة يجب أن توجه الانتباه إلى المعلومات المهمة.\nUnnecessary grid lines, axes, and heavy polygon borders can make a map harder to read.\nخطوط الشبكة والمحاور وحدود المضلعات السميكة قد تجعل الخريطة أصعب في القراءة.\nMissing values should be shown clearly instead of silently disappearing.\nيجب إظهار القيم المفقودة بوضوح بدلا من اختفائها بدون تفسير.\nContinuous colors are useful for showing gradual change.\nالألوان المستمرة مفيدة لعرض التغير التدريجي.\nClassed maps divide values into a small number of groups.\nالخرائط المصنفة تقسم القيم إلى عدد صغير من الفئات.\nAround four to six meaningful classes are usually easier to interpret.\nاستخدام أربع إلى ست فئات ذات معنى يكون عادة أسهل في التفسير.\nFor choropleth maps, rates are usually more meaningful than raw counts.\nفي الخرائط التدرجية تكون النسب عادة أكثر معنى من الأعداد الخام."
+  },
+  {
+    "objectID": "weekly-notes/week-04.html#main-week-4-takeaways",
+    "href": "weekly-notes/week-04.html#main-week-4-takeaways",
+    "title": "",
+    "section": "13. Main Week 4 Takeaways",
+    "text": "13. Main Week 4 Takeaways\nAn sf object is still a data frame, but it also contains geometry.\nكائن sf لا يزال جدول بيانات ولكنه يحتوي أيضا على هندسة مكانية.\nCRS tells us how the coordinates should be interpreted.\nCRS يحدد كيفية تفسير الإحداثيات.\nUse the same CRS before comparing spatial layers.\nاستخدم نفس نظام الإحداثيات قبل مقارنة الطبقات المكانية.\nUse projected units before measuring distance or area.\nاستخدم نظام إحداثيات مسقط قبل حساب المسافات أو المساحات.\nKnow the difference between joining by ID and joining by location.\nاعرف الفرق بين الربط باستخدام المعرف والربط باستخدام الموقع.\nKnow the difference between selecting whole features and cutting overlapping geometry.\nاعرف الفرق بين اختيار الأشكال كاملة وقص منطقة التداخل.\nSpatial definitions can change the answer to a policy question.\nالتعريفات المكانية يمكن أن تغير الإجابة عن سؤال سياساتي."
   }
 ]

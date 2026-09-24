@@ -1,0 +1,701 @@
+---
+title: "week-03"
+format: html
+---
+
+# Week 3 — ACS Reliability and Spatial Mapping
+
+## Data Visualization
+
+**English:**  
+Data visualization helps reveal patterns that summary statistics may hide. Anscombe’s Quartet shows that datasets can have similar means, correlations, and regression lines but still look very different when plotted.
+
+**العربي:**  
+الرسوم البيانية تساعدنا نلاحظ أنماط قد لا تظهر من الإحصاءات الملخصة فقط.
+
+**العربي:**  
+Anscombe’s Quartet يوضح أن بيانات مختلفة قد يكون عندها متوسط وارتباط وخط انحدار متشابه، لكن شكلها بالرسم مختلف جدًا.
+
+---
+
+## ggplot Structure
+
+```r
+ggplot(data) +
+  aes(...) +
+  geom_*()
+```
+
+**English:**  
+`ggplot(data)` selects the dataset.
+
+**العربي:**  
+`ggplot(data)` يحدد البيانات التي سنستخدمها.
+
+**English:**  
+`aes()` maps variables to visual properties such as x, y, color, and size.
+
+**العربي:**  
+`aes()` يربط المتغيرات بالمحاور أو اللون أو الحجم.
+
+**English:**  
+`geom_*()` determines how the data are drawn.
+
+**العربي:**  
+`geom_*()` يحدد شكل الرسم.
+
+---
+
+## Inside vs. Outside `aes()`
+
+```r
+aes(color = reliability)
+```
+
+**English:**  
+Use this when color is connected to a variable.
+
+**العربي:**  
+نستخدمه عندما يكون اللون مرتبطًا بمتغير في البيانات.
+
+```r
+geom_point(color = "blue")
+```
+
+**English:**  
+Use this when all points should have the same fixed color.
+
+**العربي:**  
+نستخدمه عندما نريد لونًا ثابتًا لكل النقاط.
+
+---
+
+## Common Geoms
+
+```r
+geom_histogram()
+```
+
+**English:**  
+Shows the distribution of one variable.
+
+**العربي:**  
+يعرض توزيع متغير واحد.
+
+```r
+geom_point()
+```
+
+**English:**  
+Shows the relationship between two variables.
+
+**العربي:**  
+يعرض العلاقة بين متغيرين.
+
+```r
+geom_boxplot()
+```
+
+**English:**  
+Compares groups.
+
+**العربي:**  
+يستخدم لمقارنة مجموعات.
+
+```r
+geom_col()
+```
+
+**English:**  
+Compares values between categories.
+
+**العربي:**  
+يستخدم لمقارنة القيم بين الفئات.
+
+```r
+geom_line()
+```
+
+**English:**  
+Shows change over time.
+
+**العربي:**  
+يعرض التغير عبر الزمن.
+
+```r
+geom_errorbar()
+```
+
+**English:**  
+Shows uncertainty around an estimate.
+
+**العربي:**  
+يعرض مقدار عدم اليقين حول التقدير.
+
+---
+
+## Margin of Error
+
+\[
+Estimate \pm MOE
+\]
+
+**English:**  
+The Margin of Error shows uncertainty around an estimate.
+
+**العربي:**  
+هامش الخطأ يوضح مقدار عدم اليقين حول التقدير.
+
+Example:
+
+\[
+10,000 \pm 800
+\]
+
+**English:**  
+This gives a range from approximately 9,200 to 10,800.
+
+**العربي:**  
+هذا يعطي نطاقًا تقريبيًا من 9,200 إلى 10,800.
+
+---
+
+## Relative MOE
+
+```r
+moe_pct = moe / estimate * 100
+```
+
+**English:**  
+This measures the Margin of Error relative to the estimate.
+
+**العربي:**  
+هذا يحسب هامش الخطأ كنسبة من قيمة التقدير.
+
+```r
+county_data <- county_data %>%
+  mutate(moe_pct = moe / estimate * 100)
+```
+
+---
+
+## Reliability Using MOE Percentage
+
+```r
+county_data <- county_data %>%
+  mutate(
+    reliability = case_when(
+      moe_pct < 5  ~ "High confidence",
+      moe_pct < 10 ~ "Moderate",
+      TRUE         ~ "Low confidence"
+    )
+  )
+```
+
+**English:**  
+This classifies estimates based on relative uncertainty.
+
+**العربي:**  
+هذا يصنف التقديرات حسب مقدار عدم اليقين النسبي.
+
+---
+
+## Standard Error
+
+\[
+SE = \frac{MOE}{1.645}
+\]
+
+**English:**  
+The Standard Error measures sampling uncertainty.
+
+**العربي:**  
+الـ Standard Error يقيس عدم اليقين الناتج عن العينة.
+
+```r
+med_inc_se = med_incM / 1.645
+```
+
+---
+
+## Coefficient of Variation
+
+\[
+CV = \frac{SE}{Estimate} \times 100
+\]
+
+```r
+cv = (moe / 1.645) / estimate * 100
+```
+
+**English:**  
+CV is a relative measure of sampling error.
+
+**العربي:**  
+الـ CV هو مقياس نسبي للخطأ الناتج عن العينة.
+
+---
+
+## Reliability Using CV
+
+```r
+case_when(
+  cv < 12  ~ "Reliable",
+  cv <= 40 ~ "Somewhat reliable",
+  TRUE     ~ "Unreliable"
+)
+```
+
+**English:**  
+Lower CV values indicate higher reliability.
+
+**العربي:**  
+كلما انخفضت قيمة CV كانت الموثوقية أعلى.
+
+---
+
+## Error Bars
+
+```r
+geom_errorbar(
+  aes(
+    ymin = estimate - moe,
+    ymax = estimate + moe
+  )
+)
+```
+
+**English:**  
+Error bars show the uncertainty around an estimate.
+
+**العربي:**  
+أشرطة الخطأ تعرض مقدار عدم اليقين حول التقدير.
+
+**English:**  
+A longer error bar means more uncertainty.
+
+**العربي:**  
+كلما كان شريط الخطأ أطول كان عدم اليقين أكبر.
+
+---
+
+## Derived Uncertainty
+
+```r
+sum(estimate)
+```
+
+**English:**  
+Use this to add estimates.
+
+**العربي:**  
+نستخدمه لجمع التقديرات.
+
+```r
+moe_sum(moe, estimate)
+```
+
+**English:**  
+Use this to calculate the MOE of a combined estimate.
+
+**العربي:**  
+نستخدمه لحساب هامش الخطأ للقيمة المجمعة.
+
+**English:**  
+Do not simply add MOEs together.
+
+**العربي:**  
+لا نجمع قيم MOE جمعًا مباشرًا.
+
+---
+
+## Proportions
+
+```r
+moe_prop()
+```
+
+**English:**  
+Use `moe_prop()` when the numerator is part of the denominator.
+
+**العربي:**  
+نستخدم `moe_prop()` عندما يكون البسط جزءًا من المقام.
+
+Example:
+
+```text
+People below poverty / Total population
+```
+
+---
+
+## Ratios
+
+```r
+moe_ratio()
+```
+
+**English:**  
+Use `moe_ratio()` when dividing two different quantities.
+
+**العربي:**  
+نستخدم `moe_ratio()` عندما نقسم كميتين مختلفتين.
+
+Example:
+
+```text
+Population / Households
+```
+
+**English:**  
+The numerator is not a subset of the denominator.
+
+**العربي:**  
+هنا البسط ليس جزءًا من المقام.
+
+---
+
+## Change Over Time
+
+**English:**  
+When comparing ACS 5-year estimates, use non-overlapping periods.
+
+**العربي:**  
+عند مقارنة تقديرات ACS لخمس سنوات يفضل استخدام فترات غير متداخلة.
+
+Better comparison:
+
+```text
+2014–2018 vs 2019–2023
+```
+
+Less appropriate comparison:
+
+```text
+2018–2022 vs 2019–2023
+```
+
+**English:**  
+The second comparison contains several overlapping years.
+
+**العربي:**  
+المقارنة الثانية تحتوي على سنوات مشتركة كثيرة.
+
+---
+
+## Calculate Change
+
+```r
+change = new_estimate - old_estimate
+```
+
+**English:**  
+A positive value means an increase.
+
+**العربي:**  
+القيمة الموجبة تعني زيادة.
+
+**English:**  
+A negative value means a decrease.
+
+**العربي:**  
+القيمة السالبة تعني انخفاض.
+
+---
+
+## Standard Error of the Difference
+
+```r
+se_1 = moe_1 / 1.645
+se_2 = moe_2 / 1.645
+se_diff = sqrt(se_1^2 + se_2^2)
+```
+
+**English:**  
+This combines uncertainty from both periods.
+
+**العربي:**  
+هذا يجمع مقدار عدم اليقين من الفترتين.
+
+---
+
+## Statistical Significance
+
+```r
+z = change / se_diff
+```
+
+```r
+significant = abs(z) > 1.645
+```
+
+**English:**  
+We use the absolute value of the z-score.
+
+**العربي:**  
+نستخدم القيمة المطلقة للـ z-score.
+
+**English:**  
+If `abs(z) > 1.645`, the change is statistically significant.
+
+**العربي:**  
+إذا كانت القيمة المطلقة للـ z أكبر من 1.645، فالتغير يعتبر ذا دلالة إحصائية.
+
+---
+
+## Confidence Interval of Change
+
+```r
+moe_diff = se_diff * 1.645
+```
+
+\[
+Change \pm MOE_{diff}
+\]
+
+**English:**  
+If the confidence interval includes zero, the change is not statistically significant.
+
+**العربي:**  
+إذا كانت فترة الثقة تحتوي على الصفر، فالتغير غير دال إحصائيًا.
+
+**English:**  
+If the interval does not include zero, the change is statistically significant.
+
+**العربي:**  
+إذا كانت فترة الثقة لا تحتوي على الصفر، فالتغير دال إحصائيًا.
+
+---
+
+## bind_rows()
+
+```r
+bind_rows(
+  get_poverty(2018),
+  get_poverty(2023)
+)
+```
+
+**English:**  
+`bind_rows()` stacks datasets vertically.
+
+**العربي:**  
+`bind_rows()` يجمع الجداول فوق بعض بالصفوف.
+
+---
+
+## pivot_wider()
+
+```r
+pivot_wider(
+  names_from = period,
+  values_from = c(estimate, moe)
+)
+```
+
+**English:**  
+`pivot_wider()` converts data from long format to wide format.
+
+**العربي:**  
+`pivot_wider()` يحول البيانات من الشكل الطولي إلى الشكل العريض.
+
+**English:**  
+This makes it easier to compare years side by side.
+
+**العربي:**  
+هذا يجعل مقارنة السنوات جنبًا إلى جنب أسهل.
+
+---
+
+## arrange()
+
+```r
+arrange(desc(moe_pct))
+```
+
+**English:**  
+Sorts rows based on a variable.
+
+**العربي:**  
+يرتب الصفوف حسب متغير معين.
+
+**English:**  
+`desc()` sorts from largest to smallest.
+
+**العربي:**  
+`desc()` يرتب من الأكبر إلى الأصغر.
+
+---
+
+## slice_head()
+
+```r
+slice_head(n = 15)
+```
+
+**English:**  
+Keeps the first 15 rows.
+
+**العربي:**  
+يأخذ أول 15 صفًا.
+
+---
+
+## reorder()
+
+```r
+reorder(NAME, estimate)
+```
+
+**English:**  
+Reorders categories based on the value of another variable.
+
+**العربي:**  
+يعيد ترتيب الفئات حسب قيمة متغير آخر.
+
+---
+
+## coord_flip()
+
+```r
+coord_flip()
+```
+
+**English:**  
+Flips the x and y axes.
+
+**العربي:**  
+يقلب المحورين x و y.
+
+**English:**  
+This is useful when category names are long.
+
+**العربي:**  
+هذا مفيد عندما تكون أسماء الفئات طويلة.
+
+---
+
+## str_remove()
+
+```r
+mutate(
+  NAME = str_remove(NAME, " County, New York")
+)
+```
+
+**English:**  
+Removes repeated text from names.
+
+**العربي:**  
+يحذف النص المتكرر من أسماء المناطق.
+
+---
+
+## theme_minimal()
+
+```r
+theme_minimal()
+```
+
+**English:**  
+Uses a cleaner and simpler chart theme.
+
+**العربي:**  
+يستخدم شكلًا أبسط وأنظف للرسم.
+
+---
+
+## Spatial Data
+
+```r
+geometry = TRUE
+```
+
+**English:**  
+Adding `geometry = TRUE` returns ACS data with spatial geometry.
+
+**العربي:**  
+إضافة `geometry = TRUE` تجعل بيانات ACS تحتوي على المعلومات المكانية.
+
+Example:
+
+```r
+philly_tracts <- get_acs(
+  geography = "tract",
+  state = "PA",
+  county = "Philadelphia",
+  variables = c(
+    med_inc = "B19013_001",
+    total_pop = "B01003_001"
+  ),
+  year = 2023,
+  output = "wide",
+  geometry = TRUE
+)
+```
+
+---
+
+## sf Objects
+
+```r
+class(philly_tracts)
+```
+
+**English:**  
+The data can now behave as an `sf` spatial object.
+
+**العربي:**  
+البيانات الآن يمكن التعامل معها ككائن مكاني من نوع `sf`.
+
+**English:**  
+The geometry column contains the spatial shapes.
+
+**العربي:**  
+عمود `geometry` يحتوي على الأشكال المكانية للمناطق.
+
+---
+
+## Mapping with geom_sf()
+
+```r
+ggplot(philly_tracts) +
+  geom_sf(aes(fill = ...))
+```
+
+**English:**  
+`geom_sf()` is used to draw spatial features such as census tracts.
+
+**العربي:**  
+`geom_sf()` يستخدم لرسم العناصر المكانية مثل Census Tracts.
+
+**English:**  
+The `fill` aesthetic can represent a variable across different geographic areas.
+
+**العربي:**  
+يمكن استخدام `fill` لتمثيل متغير مختلف من منطقة جغرافية إلى أخرى.
+
+---
+
+## Main Takeaway
+
+**English:**  
+This week connected statistical reliability with spatial analysis. ACS estimates should not be treated as exact numbers without considering uncertainty.
+
+**العربي:**  
+هذا الأسبوع ربط بين الموثوقية الإحصائية والتحليل المكاني.
+
+**العربي:**  
+تقديرات ACS لا يجب التعامل معها كأرقام دقيقة تمامًا بدون النظر إلى مقدار عدم اليقين.
+
+**English:**  
+MOE, SE, and CV help evaluate reliability before interpreting or mapping estimates.
+
+**العربي:**  
+تساعد MOE وSE وCV في تقييم موثوقية البيانات قبل تفسيرها أو عرضها على الخريطة.
+
+**English:**  
+Adding geometry allows statistical ACS data to become spatial data that can be mapped using `geom_sf()`.
+
+**العربي:**  
+إضافة Geometry تسمح بتحويل بيانات ACS الإحصائية إلى بيانات مكانية يمكن رسمها باستخدام `geom_sf()`.

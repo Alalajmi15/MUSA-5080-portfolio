@@ -1,0 +1,1314 @@
+---
+title: "Assignment: Building Features, Watching What Happens"
+subtitle: "MUSA 5080 · Integrates Weeks 1–5 · Due Friday, October 16"
+author: "Alhaylam Fahad Alajmi"
+format:
+  html:
+    toc: true
+    code-fold: show
+    code-tools: true
+execute:
+  warning: false
+  message: false
+freeze: false
+---
+
+## What this assignment is (and isn't)
+
+This is **not a competition.** There's no leaderboard and no target RMSE. The goal is to practice the full prediction workflow on a question you choose, and to **find out what actually helps.** Some features you're sure will help won't, and some you add on a whim will. Both are findings.
+
+You'll:
+
+1. Choose a tract-level outcome for Philadelphia and check whether it's reliable enough to model (Weeks 2–3).
+2. Fit a baseline model and cross-validate it (Week 5).
+3. Pull data from Philadelphia's open data portal through its API and build spatial features: counts, densities, and distances (Week 4, plus one new tool).
+4. Transform variables with logs, squared terms, and categories. **Watch the October 9 recorded lecture before Part 5.**
+5. Keep a **model log** the whole way through, and compare where your first and final models go wrong.
+
+**Timing.** Parts 1–4 use only what we've covered through Week 5. You can finish them before the October 9 lecture. Part 5 is new material; the lecture explains it, and the instructions below give you the essentials.
+
+**Type the code yourself.** The worked examples show the pattern. Your job is to apply it to your outcome and your data choices.
+
+### Three rules that apply everywhere
+
+::: {.callout-important}
+## 1. Don't drop rows
+Every model is cross-validated on the same tracts with the same folds, so the rows in your model log are comparable. If a new variable has missing values, fill them (for example, 0 for a count, or the median with a note) or choose a different variable. The `cv_rmse()` helper below will stop and tell you if you break this rule.
+
+## 2. Stay inside the time window
+Your outcome comes from the 2019–2023 ACS. Pull open data from **2023 or earlier** (2021–2023 is ideal). Using 2025 data to predict a 2023 outcome uses information from the future, which a real prediction model would never have.
+
+## 3. No leakage
+Don't use any variable that's built from your outcome or measures the same thing another way. Ask yourself: *would an agency trying to predict this outcome for a tract have this variable?* If the answer is "only because it's basically the outcome," leave it out.
+:::
+
+---
+
+## Part 0: Setup
+
+```{r}
+#| label: setup
+library(tidyverse)
+library(tidycensus)
+library(sf)
+library(caret)
+
+Sys.getenv("CENSUS_API_KEY") != ""   # should print TRUE
+```
+
+### The cross-validation helper
+
+This function runs 10-fold cross-validation with the same seed every time, so every model in your log is tested on the same folds. **You don't need to change it.** Read it once so you know what it does.
+
+```{r}
+#| label: cv-helper
+ctrl <- trainControl(method = "cv", number = 10)
+
+cv_rmse <- function(formula, data) {
+  df <- if (inherits(data, "sf")) st_drop_geometry(data) else data
+  vars <- all.vars(formula)
+  bad <- vars[sapply(vars, function(v) any(is.na(df[[v]])))]
+  if (length(bad) > 0) {
+    stop("These variables have NAs: ", paste(bad, collapse = ", "),
+         ". Fill them or choose another variable (Rule 1: don't drop rows).")
+  }
+  set.seed(5080)
+  fit <- train(formula, data = df, method = "lm", trControl = ctrl)
+  fit$results$RMSE
+}
+```
+
+### The model log
+
+Every time you fit a new model, add a row. By the end, this table is the story of your assignment.
+
+```{r}
+#| label: log-start
+model_log <- tibble(
+  model   = character(),
+  added   = character(),
+  cv_rmse = numeric(),
+  notes   = character()
+)
+```
+
+---
+
+## Part 1: Choose your outcome
+
+::: {.callout-note appearance="simple" icon=false}
+
+### Research Question
+
+**Can socioeconomic characteristics and spatial features predict mean travel time to work across Philadelphia census tracts?**
+
+This analysis examines differences in average commute times across Philadelphia using 2019–2023 American Community Survey (ACS) data. Mean travel time to work, measured in minutes, is the outcome variable. The analysis begins with socioeconomic predictors and then evaluates whether additional spatial features improve predictive performance.
+
+The goal is to understand where the model predicts commute times well, where it makes larger errors, and what those patterns may suggest for urban transportation planning.
+
+:::
+
+
+Pick a **tract-level ACS variable for Philadelphia** that matters for policy. Two outcomes are off limits: median gross rent (we did it in lab) and median home value (save it for A4).
+
+Some ideas if you're stuck:
+
+| Outcome | Why an agency might care | ACS table |
+|---|---|---|
+| % of households with no vehicle | Transit planning | B08201 or B25044 |
+| Mean travel time to work | Access to jobs | B08013_001 ÷ B08303_001 |
+| % of people below poverty | Targeting services | B17001 |
+| % of housing units vacant | Housing and blight | B25002 |
+| % of households overcrowded | Housing conditions | B25014 |
+
+Use `load_variables(2023, "acs5")` to browse and find exact variable codes.
+
+### 1A: Pull your outcome and your baseline predictors
+
+Choose **three to five ACS predictors** for your baseline model. They should be things that plausibly relate to your outcome, but **none of them may be built from your outcome** (Rule 3).
+
+```{r}
+#| label: pull
+
+philly_tracts <- get_acs(
+  geography = "tract",
+  state = "PA",
+  county = "Philadelphia",
+  variables = c(
+    total_pop      = "B01003_001",
+    travel_minutes = "B08013_001",
+    commuters      = "B08303_001",
+    med_income     = "B19013_001",
+    occupied_units = "B25003_001",
+    renter_units   = "B25003_003",
+    households     = "B08201_001",
+    no_vehicle     = "B08201_002",
+    edu_total      = "B15003_001",
+    bachelors      = "B15003_022",
+    masters        = "B15003_023",
+    professional   = "B15003_024",
+    doctorate      = "B15003_025"
+  ),
+  year = 2023,
+  survey = "acs5",
+  output = "wide",
+  geometry = TRUE
+) %>%
+  st_transform(2272)
+```
+
+```{r}
+#| label: build-outcome
+philly_tracts <- philly_tracts %>%
+  mutate(
+    y = if_else(
+      commutersE > 0,
+      travel_minutesE / commutersE,
+      NA_real_
+    ),
+
+    median_income = med_incomeE,
+
+    pct_renter = if_else(
+      occupied_unitsE > 0,
+      renter_unitsE / occupied_unitsE * 100,
+      NA_real_
+    ),
+
+    pct_no_vehicle = if_else(
+      householdsE > 0,
+      no_vehicleE / householdsE * 100,
+      NA_real_
+    ),
+
+    pct_bachelors = if_else(
+      edu_totalE > 0,
+      (bachelorsE + mastersE + professionalE + doctorateE) /
+        edu_totalE * 100,
+      NA_real_
+    ),
+
+    y_moe = if_else(
+      commutersE > 0 & !is.na(y),
+      sqrt(travel_minutesM^2 + y^2 * commutersM^2) /
+        commutersE,
+      NA_real_
+    ),
+
+    y_cv = if_else(
+      !is.na(y) & y > 0,
+      (y_moe / 1.645) / y * 100,
+      NA_real_
+    )
+  )
+```
+
+
+### 1B: Is it reliable enough to model?
+
+Before you commit, check three things.
+
+```{r}
+#| label: reliability
+#| message: false
+#| warning: false
+
+# Missing outcome values
+sum(is.na(philly_tracts$y))
+
+# Approximate coefficient of variation
+summary(philly_tracts$y_cv)
+
+# Reliability categories
+reliability_table <- philly_tracts %>%
+  st_drop_geometry() %>%
+  mutate(
+    reliability = case_when(
+      is.na(y_cv) ~ "Missing",
+      y_cv < 12 ~ "High",
+      y_cv <= 40 ~ "Moderate",
+      TRUE ~ "Low"
+    ),
+    reliability = factor(
+      reliability,
+      levels = c("High", "Moderate", "Low", "Missing")
+    )
+  ) %>%
+  count(reliability, .drop = FALSE)
+
+reliability_table
+
+# Distribution of mean commute time
+ggplot(
+  philly_tracts %>% filter(!is.na(y)),
+  aes(x = y)
+) +
+  geom_histogram(
+    bins = 30,
+    fill = "#176B4A",
+    color = "#F8F5EE",
+    linewidth = 0.4
+  ) +
+  geom_vline(
+    xintercept = median(philly_tracts$y, na.rm = TRUE),
+    color = "#C3A15D",
+    linewidth = 1.1,
+    linetype = "dashed"
+  ) +
+  labs(
+    title = "Mean Commute Time Across Philadelphia",
+    subtitle = "ACS 2019–2023 | Census tract level",
+    x = "Mean travel time to work (minutes)",
+    y = "Number of census tracts",
+    caption = "Source: U.S. Census Bureau, ACS 2019–2023"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(
+      color = "#173F34",
+      face = "bold",
+      size = 16
+    ),
+    plot.subtitle = element_text(color = "#71866A"),
+    axis.title = element_text(color = "#173F34"),
+    panel.grid.minor = element_blank(),
+    plot.background = element_rect(
+      fill = "#F8F5EE",
+      color = NA
+    )
+  )
+```
+
+### Interpretation: Commute Time and Data Reliability
+
+Mean travel time to work varies across Philadelphia census tracts, with most estimates falling between approximately 25 and 40 minutes. Transportation agencies could use these differences to investigate areas with longer commutes and identify potential transportation accessibility challenges.
+
+Of the 408 census tracts, 360 (88.2%) have moderate reliability, 25 (6.1%) have low reliability, one (0.2%) has high reliability, and 22 (5.4%) have missing values. Since the share of low-reliability tracts is well below one-third, I will retain mean commute time as the outcome, while interpreting the results cautiously because the reliability categories are based on an approximate CV rather than an official ACS measure.
+
+### 1C: Decide which tracts to model
+
+Filter once, here, and never again. Every later step uses `tracts`.
+
+```{r}
+#| label: filter
+
+tracts <- philly_tracts %>%
+  filter(
+    total_popE > 0,
+    !is.na(y),
+    is.finite(y),
+    !is.na(y_cv),
+    !is.na(median_income),
+    median_income > 0,
+    !is.na(pct_renter),
+    !is.na(pct_no_vehicle),
+    !is.na(pct_bachelors)
+  )
+
+nrow(philly_tracts)
+nrow(tracts)
+```
+
+### Model Sample Selection
+
+Of the 408 Philadelphia census tracts, 380 were retained for modeling, while 28 (6.9%) were excluded because they lacked a valid outcome or one or more baseline predictors.
+
+Most excluded tracts have zero population or very few commuters, including several tracts numbered in the 9800 series. However, some populated tracts were excluded because median household income was unavailable.
+
+The final sample of 380 tracts will remain fixed across all subsequent models to ensure that differences in cross-validated RMSE reflect model performance rather than changes in the study sample.
+
+---
+
+## Part 2: Baseline model
+
+### 2A: Look first
+
+Plot your outcome against each predictor before modeling (the Week 3 habit).
+
+```{r}
+#| label: look
+#| fig-width: 10
+#| fig-height: 8
+#| warning: false
+#| message: false
+
+plot_data <- tracts %>%
+  st_drop_geometry() %>%
+  select(
+    y,
+    median_income,
+    pct_renter,
+    pct_no_vehicle,
+    pct_bachelors
+  ) %>%
+  pivot_longer(
+    cols = -y,
+    names_to = "predictor",
+    values_to = "value"
+  ) %>%
+  mutate(
+    predictor = factor(
+      predictor,
+      levels = c(
+        "median_income",
+        "pct_renter",
+        "pct_no_vehicle",
+        "pct_bachelors"
+      ),
+      labels = c(
+        "Median Household Income ($)",
+        "Renter-Occupied Housing (%)",
+        "Households Without a Vehicle (%)",
+        "Bachelor's Degree or Higher (%)"
+      )
+    )
+  )
+
+ggplot(plot_data, aes(x = value, y = y)) +
+  geom_point(
+    color = "#176B4A",
+    alpha = 0.45,
+    size = 1.5
+  ) +
+  geom_smooth(
+    method = "lm",
+    se = FALSE,
+    color = "#C3A15D",
+    linewidth = 1
+  ) +
+  facet_wrap(
+    ~ predictor,
+    scales = "free_x",
+    ncol = 2
+  ) +
+  labs(
+    title = "Exploring the Predictors of Commute Time",
+    subtitle = "Philadelphia census tracts | ACS 2019–2023",
+    x = "Predictor value",
+    y = "Mean travel time to work (minutes)",
+    caption = "Source: U.S. Census Bureau, ACS 2019–2023"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(
+      color = "#173F34",
+      face = "bold",
+      size = 16
+    ),
+    plot.subtitle = element_text(color = "#71866A"),
+    strip.text = element_text(
+      color = "#173F34",
+      face = "bold",
+      size = 10
+    ),
+    panel.grid.minor = element_blank(),
+    plot.background = element_rect(
+      fill = "#F8F5EE",
+      color = NA
+    )
+  )
+```
+### Interpretation: Socioeconomic Patterns in Commute Time
+
+The scatterplots suggest negative associations between mean commute time and all four baseline predictors. Median household income and the percentage of residents with a bachelor's degree or higher show more noticeable downward trends, while renter occupancy and households without a vehicle exhibit weaker relationships.
+
+However, substantial variation remains around each fitted line, indicating that socioeconomic characteristics alone may not fully explain differences in commuting times across Philadelphia census tracts. This motivates the baseline regression model and the later addition of spatial features to evaluate whether predictive accuracy improves.
+
+
+### 2B: Fit and log
+
+```{r}
+#| label: m1
+#| warning: false
+#| message: false
+
+# Baseline model: four socioeconomic predictors
+f1 <- y ~ median_income + pct_renter +
+  pct_no_vehicle + pct_bachelors
+
+# Fit the linear regression model
+m1 <- lm(f1, data = tracts)
+
+# Display model results
+summary(m1)
+
+# Record cross-validated performance
+model_log <- model_log %>%
+  add_row(
+    model = "m1",
+    added = "ACS baseline",
+    cv_rmse = cv_rmse(f1, tracts),
+    notes = "Four socioeconomic predictors"
+  )
+
+model_log
+```
+
+### Baseline Model Performance
+
+The baseline model uses four socioeconomic predictors: median household income, renter occupancy, households without a vehicle, and educational attainment.
+
+The 10-fold cross-validation RMSE is 5.15 minutes. This means that, on census tracts not used to fit each training fold, the model's typical prediction error is approximately 5.15 minutes.
+
+This result establishes a benchmark for evaluating whether additional spatial features improve predictions of commute time across Philadelphia.
+
+### 2C: Where is the baseline wrong?
+
+Save this map. You'll compare it to your final model's map in Part 6.
+
+```{r}
+#| label: resid-map-1
+#| fig-width: 11
+#| fig-height: 8
+#| warning: false
+#| message: false
+
+# Calculate baseline model residuals
+tracts <- tracts %>%
+  mutate(resid_m1 = residuals(m1))
+
+# Use a symmetric color scale for residuals
+resid_limit <- max(abs(tracts$resid_m1), na.rm = TRUE)
+
+# Baseline residual map
+ggplot(tracts) +
+  geom_sf(
+    aes(fill = resid_m1),
+    color = "#F8F5EE",
+    linewidth = 0.12
+  ) +
+  scale_fill_gradient2(
+    low = "#176B4A",
+    mid = "#F8F5EE",
+    high = "#C3A15D",
+    midpoint = 0,
+    limits = c(-resid_limit, resid_limit),
+    name = "Residual\n(minutes)"
+  ) +
+  labs(
+    title = "Where Does the Baseline Model Miss?",
+    subtitle = "Philadelphia census tracts | ACS 2019–2023",
+    caption = paste(
+      "Green: shorter commutes than predicted |",
+      "Gold: longer commutes than predicted",
+      "\nSource: U.S. Census Bureau, ACS 2019–2023"
+    )
+  ) +
+  theme_void() +
+  theme(
+    plot.background = element_rect(
+      fill = "#F8F5EE",
+      color = NA
+    ),
+    plot.title = element_text(
+      color = "#173F34",
+      face = "bold",
+      size = 18
+    ),
+    plot.subtitle = element_text(
+      color = "#71866A",
+      size = 11
+    ),
+    plot.caption = element_text(
+      color = "#173F34",
+      size = 9,
+      hjust = 0
+    ),
+    legend.title = element_text(
+      color = "#173F34",
+      face = "bold"
+    ),
+    legend.position = "right",
+    plot.margin = margin(15, 15, 15, 15)
+  )
+```
+
+### Interpretation: Spatial Patterns in Baseline Model Errors
+
+The baseline residual map shows that prediction errors are not evenly distributed across Philadelphia. Several tracts near the central part of the city have negative residuals, indicating shorter observed commute times than the model predicts, while positive residuals appear in scattered areas, including parts of northwestern Philadelphia.
+
+These patterns suggest that socioeconomic characteristics alone may not capture important geographic differences in commuting conditions. Factors such as transit accessibility, proximity to employment centers, and the spatial distribution of transportation infrastructure may help explain some of the remaining errors.
+
+To investigate these patterns, the next stage will introduce spatial features from Philadelphia's open data and test whether they improve cross-validated prediction accuracy.
+
+---
+
+## Part 3: Getting data from Philadelphia's open data portal
+
+Many of the city's datasets on [OpenDataPhilly](https://opendataphilly.org) are served through a **Carto SQL API**. You send a SQL query in a URL, and it sends back data. Ask for `format=GeoJSON` and `st_read()` reads the result directly, just like the Indego feed in Week 4.
+
+The pattern:
+
+```
+https://phl.carto.com/api/v2/sql?format=GeoJSON&q=SELECT ... FROM table_name WHERE ...
+```
+
+Three pieces of SQL are all you need:
+
+- `SELECT the_geom, column1, column2` chooses which columns come back. **Always include `the_geom`**, or you get no geometry.
+- `FROM table_name` chooses the dataset.
+- `WHERE ...` filters rows. **Filter in the query, not in R.** Some tables have millions of rows, and pulling everything will be slow or fail.
+
+This helper builds the URL for you. Spaces and symbols in a URL need encoding, and `URLencode()` handles that.
+
+```{r}
+#| label: carto-helper
+carto_get <- function(sql) {
+  url <- paste0("https://phl.carto.com/api/v2/sql?format=GeoJSON&q=", URLencode(sql))
+  st_read(url, quiet = TRUE)
+}
+```
+
+### Finding a table name
+
+On a dataset's OpenDataPhilly page, look for the API link. The table name is the word after `FROM` in the example query. To see what values a column takes before you filter on it, ask for a count in CSV format:
+
+```{r}
+#| label: explore-values
+# What kinds of crime are in the incidents table in 2023?
+url <- paste0("https://phl.carto.com/api/v2/sql?format=csv&q=",
+              URLencode("SELECT text_general_code, COUNT(*) AS n
+                         FROM incidents_part1_part2
+                         WHERE dispatch_date >= '2023-01-01' AND dispatch_date < '2024-01-01'
+                         GROUP BY text_general_code ORDER BY n DESC"))
+read_csv(url)
+```
+
+### Worked example: residential burglaries in 2023
+
+```{r}
+#| label: worked-burglary
+burglary <- carto_get(
+  "SELECT the_geom, text_general_code, dispatch_date
+   FROM incidents_part1_part2
+   WHERE dispatch_date >= '2023-01-01' AND dispatch_date < '2024-01-01'
+     AND text_general_code = 'Burglary Residential'"
+) %>%
+  st_transform(st_crs(tracts))    # Carto returns EPSG 4326; translate immediately
+
+nrow(burglary)
+#| label: worked-burglary
+
+burglary <- carto_get(
+  "SELECT the_geom, text_general_code, dispatch_date
+   FROM incidents_part1_part2
+   WHERE dispatch_date >= '2023-01-01'
+   AND dispatch_date < '2024-01-01'
+   AND text_general_code = 'Burglary Residential'"
+) %>%
+  st_transform(st_crs(tracts))
+
+nrow(burglary)
+
+burglary <- burglary %>%
+  filter(!st_is_empty(geometry))
+
+nrow(burglary)
+```
+
+::: {.callout-warning}
+## Check for missing geometry
+Some records have no location. Drop them with `filter(!st_is_empty(burglary))`, and count how many you lost. Every point you drop is a point that won't be counted.
+:::
+
+### Other layers to try
+
+These tables were available on Carto as of this fall. If a query fails, check the dataset's OpenDataPhilly page for the current table name.
+
+| Data | Table | Filter on | Notes |
+|---|---|---|---|
+| Crime incidents | `incidents_part1_part2` | `dispatch_date`, `text_general_code` | Pick specific offense types |
+| Shooting victims | `shootings` | `date_` | Small enough to pull several years |
+| 311 requests | `public_cases_fc` | `requested_datetime`, `service_name` | Use the count query above to see service names |
+| Indego stations | *(not Carto)* `https://www.rideindego.com/stations/json/` | — | The Week 4 feed |
+
+Datasets not on Carto often have a GeoJSON download link on their OpenDataPhilly page. `st_read()` reads those URLs too.
+For example, navigage to https://opendataphilly.org/, find a dataset that you'd like to import. I found city landmarks. On the page there is a link to a GeoJSON file. I simply right-clicked on that hyperlink and copied it and then used st_read() and pasted the link: 
+
+landmarks <- st_read("https://hub.arcgis.com/api/v3/datasets/6b2fe4a0fbe14e0a8e6afceaea230b8e_0/downloads/data?format=geojson&spatialRefId=4326&where=1%3D1")
+
+### Your turn
+
+Pull **at least two layers** that you think relate to your outcome. Base your choice on your Part 2C answer.
+
+```{r}
+#| label: my-layers
+
+layer1 <- burglary
+
+layer2 <- carto_get(
+  "SELECT the_geom, service_name, requested_datetime
+   FROM public_cases_fc
+   WHERE requested_datetime >= '2023-01-01'
+     AND requested_datetime < '2024-01-01'
+     AND service_name = 'Street Defect'"
+) %>%
+  st_transform(st_crs(tracts))
+
+layer2 <- layer2 %>%
+  filter(!st_is_empty(geometry))
+
+cat("Residential burglaries:", nrow(layer1), "\n")
+cat("Street defect reports:", nrow(layer2), "\n")
+```
+
+### Why These Spatial Layers?
+
+Two spatial datasets from 2023 were selected to investigate geographic factors that may help explain differences in mean commute time across Philadelphia.
+
+The first dataset contains 13,662 geocoded street defect reports. These reports provide a potential indicator of roadway maintenance conditions that may affect travel experiences but are not directly represented by the ACS socioeconomic predictors.
+
+The second dataset contains 3,681 geocoded residential burglary incidents. Their spatial distribution may capture aspects of neighborhood conditions that are not fully reflected in income, educational attainment, renter occupancy, or vehicle availability.
+
+These variables are exploratory indicators rather than direct measures of commute time or causal effects. The next step is to evaluate whether features derived from these locations improve cross-validated prediction accuracy.
+
+---
+
+## Part 4: Building spatial features
+
+Every feature below reuses a Week 4 tool. The worked examples use burglaries and Indego stations; you build the same types from your own layers.
+
+### 4A: Counting
+
+How many burglaries fall in each tract?
+
+```{r}
+#| label: count
+
+# Count residential burglaries in each census tract
+tracts <- tracts %>%
+  mutate(
+    n_burglary = lengths(st_intersects(geometry, layer1))
+  )
+
+# Summarize burglary counts across tracts
+summary(tracts$n_burglary)
+```
+
+A tract with no burglaries gets 0, not NA, so Rule 1 is safe.
+
+### 4B: Density: don't skip this
+
+Raw counts mostly measure **tract size**. A big tract has more of everything. Normalize by area, by population, or by housing units, depending on what makes sense for the thing you're counting.
+
+```{r}
+#| label: density
+
+tracts <- tracts %>%
+  mutate(
+    area_sqmi = as.numeric(st_area(geometry)) / 27878400,
+
+    burglary_per_sqmi = if_else(
+      area_sqmi > 0,
+      n_burglary / area_sqmi,
+      NA_real_
+    ),
+
+    burglary_per_1k = if_else(
+      total_popE > 0,
+      n_burglary / total_popE * 1000,
+      NA_real_
+    )
+  )
+
+summary(tracts$burglary_per_sqmi)
+summary(tracts$burglary_per_1k)
+```
+
+::: {.callout-note}
+## Per capita in low-population tracts
+If a tract has 40 residents and 3 burglaries, its rate is 75 per 1,000, which is a huge number built on tiny counts. Look at the tracts with the highest per-capita rates before you trust them. This is the Week 3 lesson about small denominators again.
+:::
+
+### 4C: Measuring distance to the nearest thing
+
+How far is each tract from its nearest Indego station? Use the Week 4 pattern: find the nearest feature, then measure to it **element by element**.
+
+```{r}
+#| label: nearest
+
+# Create a point inside each census tract
+tract_pts <- st_point_on_surface(tracts)
+
+# Find the nearest street defect report from 2023
+nearest_idx <- st_nearest_feature(tract_pts, layer2)
+
+# Calculate distance in miles
+tracts <- tracts %>%
+  mutate(
+    dist_defect_mi = as.numeric(
+      st_distance(
+        tract_pts,
+        layer2[nearest_idx, ],
+        by_element = TRUE
+      )
+    ) / 5280
+  )
+
+# Review distance distribution
+summary(tracts$dist_defect_mi)
+```
+
+### 4D: Measuring distance to one place
+
+Sometimes the "thing" is a single location, such as City Hall as a stand-in for the center of the regional economy.
+
+```{r}
+#| label: city-hall
+
+# Philadelphia City Hall coordinates
+city_hall <- st_sfc(
+  st_point(c(-75.1636, 39.9526)),
+  crs = 4326
+) %>%
+  st_transform(st_crs(tracts))
+
+# Calculate distance to City Hall in miles
+tracts <- tracts %>%
+  mutate(
+    dist_ch_mi = as.numeric(
+      st_distance(tract_pts, city_hall)
+    ) / 5280
+  )
+
+# Review distance distribution
+summary(tracts$dist_ch_mi)
+```
+
+### 4E: Your turn
+
+Build **at least three spatial features** from your own layers, and use at least two types (count, density, nearest distance, distance to a place). After **each one**, fit a model, cross-validate it, and log it.
+
+```{r}
+#| label: my-spatial
+#| warning: false
+#| message: false
+
+# Baseline model
+f1 <- y ~ median_income + pct_renter +
+  pct_no_vehicle + pct_bachelors
+
+# Spatial feature 1: Burglary count
+f2 <- update(f1, . ~ . + n_burglary)
+
+# Spatial feature 2: Burglary density
+f3 <- update(f1, . ~ . + burglary_per_sqmi)
+
+# Spatial feature 3: Distance to nearest street defect
+f4 <- update(f1, . ~ . + dist_defect_mi)
+
+# Spatial feature 4: Distance to City Hall
+f5 <- update(f1, . ~ . + dist_ch_mi)
+
+# Fit and cross-validate each model
+m2 <- lm(f2, data = tracts)
+m3 <- lm(f3, data = tracts)
+m4 <- lm(f4, data = tracts)
+m5 <- lm(f5, data = tracts)
+
+# Record model performance
+model_log <- model_log %>%
+  add_row(
+    model = "m2",
+    added = "Burglary count",
+    cv_rmse = cv_rmse(f2, tracts),
+    notes = "Count feature"
+  ) %>%
+  add_row(
+    model = "m3",
+    added = "Burglary density per square mile",
+    cv_rmse = cv_rmse(f3, tracts),
+    notes = "Density feature"
+  ) %>%
+  add_row(
+    model = "m4",
+    added = "Distance to nearest street defect",
+    cv_rmse = cv_rmse(f4, tracts),
+    notes = "Nearest-distance feature"
+  ) %>%
+  add_row(
+    model = "m5",
+    added = "Distance to City Hall",
+    cv_rmse = cv_rmse(f5, tracts),
+    notes = "Distance-to-place feature"
+  )
+
+# Compare models
+model_log
+```
+
+### Interpretation: Which Spatial Features Improved Prediction?
+
+Among the four spatial features tested, distance to Philadelphia City Hall produced the largest improvement in predictive performance. Adding this variable reduced the 10-fold cross-validation RMSE from 5.1513 minutes in the baseline model to 5.1233 minutes. Although the improvement is small, it suggests that geographic proximity to the city center may provide information not fully captured by socioeconomic characteristics.
+
+In contrast, burglary counts, burglary density, and distance to the nearest street defect report slightly increased the CV RMSE. These features may reflect neighborhood conditions, but they do not necessarily capture the transportation accessibility factors that determine commute times. Their limited predictive value may also reflect differences in reporting patterns and the indirect relationship between these indicators and commuting behavior.
+
+Overall, the results suggest that distance to the city center is a more useful spatial predictor than the neighborhood incident indicators tested here. However, the small improvement should be interpreted cautiously.
+
+---
+
+## Part 5: Transforming features
+
+**Watch the October 9 recorded lecture before you start this part.** Below is a summary to work from.
+
+So far, every predictor has entered the model as a straight line: each additional unit of X changes predicted Y by the same amount, everywhere. Transformations let the model bend. For prediction, the question is simply **does the bend lower CV RMSE?** For interpretation, each transformation changes what a coefficient means, so you need to know how to read it.
+
+::: {.callout-tip}
+## Transform predictors, not your outcome
+Keep your outcome `y` untransformed in this assignment. If you model `log(y)`, your CV RMSE comes out in log units and can't be compared to the other rows in your log. (Predicting a logged outcome well requires back-transforming, which is an A4 topic.)
+:::
+
+### 5A: Logs, for skewed predictors
+
+Many urban variables are skewed: a few tracts have huge values, and most have small ones. Income, density, and counts are typical. A log compresses the long tail, so a model can use the difference between 1 and 10 as well as the difference between 100 and 1,000.
+
+```{r}
+#| label: log-look
+#| fig-width: 11
+#| fig-height: 5
+
+library(patchwork)
+
+p1 <- ggplot(tracts, aes(x = burglary_per_sqmi)) +
+  geom_histogram(bins = 30, fill = "#176B4A", color = "#F8F5EE") +
+  labs(
+    title = "Before Transformation",
+    x = "Residential burglaries per square mile",
+    y = "Number of census tracts"
+  ) +
+  theme_minimal()
+
+p2 <- ggplot(tracts, aes(x = log1p(burglary_per_sqmi))) +
+  geom_histogram(bins = 30, fill = "#C3A15D", color = "#F8F5EE") +
+  labs(
+    title = "After Log Transformation",
+    x = "log(1 + burglaries per square mile)",
+    y = "Number of census tracts"
+  ) +
+  theme_minimal()
+
+(p1 + p2) +
+  plot_annotation(
+    title = "Distribution of Burglary Density",
+    subtitle = "Philadelphia census tracts | ACS 2019–2023"
+  ) &
+  theme(
+    plot.background = element_rect(fill = "#F8F5EE", color = NA),
+    plot.title = element_text(color = "#173F34", face = "bold")
+  )
+```
+
+### Interpretation: Log Transformation of Burglary Density
+
+The original distribution of residential burglary density is strongly right-skewed, with most census tracts reporting relatively low densities and a small number showing exceptionally high values.
+
+Applying the log1p transformation compresses these extreme values and produces a more balanced distribution while preserving zero-valued observations.
+
+Although the transformation reduces skewness, its usefulness for predicting mean commute time must be evaluated through cross-validation rather than the distribution alone.
+
+::: {.callout-warning}
+## log(0) doesn't exist
+`log(0)` is `-Inf`, and it will break your model. Counts and densities often include zeros. Use `log1p(x)`, which computes `log(x + 1)`, for anything that can be 0.
+:::
+
+**Reading the coefficient:** when a predictor is logged, a **1% increase** in X goes with a change of about **β/100** in Y, in Y's units. With `log1p`, this reading is approximate for small values of X.
+
+### 5B: Squared terms, for curves
+
+If your scatterplot bends (rising and then flattening, or falling and then rising), a squared term lets the line curve. Write it with `I()`, which tells R to do the arithmetic rather than read `^` as formula syntax.
+
+```{r}
+#| label: squared-example
+
+# Test a nonlinear relationship with distance to City Hall
+m_sq <- lm(
+  y ~ dist_ch_mi + I(dist_ch_mi^2),
+  data = tracts
+)
+
+# Review regression coefficients
+summary(m_sq)
+```
+
+**Reading the coefficient:** you can't read either coefficient alone anymore. The effect of X depends on where you are along X. A positive linear term with a negative squared term means Y rises with X and then levels off or turns down. Plot the fitted curve to see it:
+
+```{r}
+#| label: squared-plot
+#| fig-width: 10
+#| fig-height: 6
+
+ggplot(tracts, aes(x = dist_ch_mi, y = y)) +
+  geom_point(color = "#176B4A", alpha = 0.45) +
+  geom_smooth(
+    method = "lm",
+    formula = y ~ x + I(x^2),
+    se = FALSE,
+    color = "#C3A15D",
+    linewidth = 1.2
+  ) +
+  labs(
+    title = "Distance to City Hall and Mean Commute Time",
+    subtitle = "Quadratic relationship across Philadelphia census tracts",
+    x = "Distance to City Hall (miles)",
+    y = "Mean travel time to work (minutes)",
+    caption = "Source: U.S. Census Bureau, ACS 2019–2023"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(
+      color = "#173F34",
+      face = "bold",
+      size = 16
+    ),
+    plot.background = element_rect(
+      fill = "#F8F5EE",
+      color = NA
+    ),
+    panel.grid.minor = element_blank()
+  )
+```
+
+### Interpretation: Nonlinear Relationship Between Distance and Commute Time
+
+The quadratic model reveals an inverted U-shaped relationship between distance to Philadelphia City Hall and mean commute time. Predicted commute times increase with distance from the city center, reaching a peak at approximately 8.5 miles, before gradually declining.
+
+However, the considerable dispersion of observations around the fitted curve indicates that distance alone cannot fully explain commuting patterns. This nonlinear relationship is worth testing alongside the socioeconomic predictors, using cross-validation to determine whether it improves predictive accuracy.
+
+### 5C: Categorical variables
+
+Sometimes a number works better as groups, either because the relationship isn't smooth or because the categories are meaningful. You can make categories from any variable with `case_when()` or `cut()`, and then make sure R treats them as a **factor**.
+
+```{r}
+#| label: categorical-example
+tracts <- tracts %>%
+  mutate(
+    ring = case_when(
+      dist_ch_mi < 2 ~ "Core",
+      dist_ch_mi < 5 ~ "Inner",
+      TRUE           ~ "Outer"
+    ),
+    ring = factor(ring, levels = c("Core", "Inner", "Outer"))
+  )
+
+tracts %>% st_drop_geometry() %>% count(ring)
+
+m_cat <- lm(y ~ ring, data = tracts)
+summary(m_cat)
+```
+
+**Reading the coefficients:** R turns a factor with k categories into k − 1 dummy variables. The category left out is the **reference level** (here, "Core," the first level). Each coefficient is the **difference from the reference**: `ringOuter` is how much higher or lower predicted Y is in outer tracts *compared to core tracts*, holding everything else in the model constant. To change the reference, use `relevel(ring, ref = "Outer")`.
+
+::: {.callout-note}
+## Check your group sizes
+If a category has only a handful of tracts, its coefficient is unstable, and in cross-validation some folds may not contain it at all. Aim for at least 20 tracts per category.
+:::
+
+### 5D: Your turn
+
+Try **at least one of each**: a log, a squared term, and a categorical variable. Choose which variables to transform based on your plots, not at random. Log each model.
+
+```{r}
+#| label: my-transforms
+#| warning: false
+#| message: false
+
+# Baseline formula
+f1 <- y ~ median_income + pct_renter +
+  pct_no_vehicle + pct_bachelors
+
+# 1. Log transformation of burglary density
+f_log <- update(
+  f1, . ~ . + log1p(burglary_per_sqmi)
+)
+
+# 2. Squared distance to City Hall
+f_sq <- update(
+  f1, . ~ . + dist_ch_mi + I(dist_ch_mi^2)
+)
+
+# 3. Categorical distance to City Hall
+f_cat <- update(
+  f1, . ~ . + ring
+)
+
+# Fit the three models
+m_log <- lm(f_log, data = tracts)
+m_sq_full <- lm(f_sq, data = tracts)
+m_cat_full <- lm(f_cat, data = tracts)
+
+# Record cross-validated performance
+model_log <- model_log %>%
+  add_row(
+    model = "m6",
+    added = "Log burglary density",
+    cv_rmse = cv_rmse(f_log, tracts),
+    notes = "Log transformation"
+  ) %>%
+  add_row(
+    model = "m7",
+    added = "Squared distance to City Hall",
+    cv_rmse = cv_rmse(f_sq, tracts),
+    notes = "Quadratic transformation"
+  ) %>%
+  add_row(
+    model = "m8",
+    added = "Categorical distance rings",
+    cv_rmse = cv_rmse(f_cat, tracts),
+    notes = "Core reference category"
+  )
+
+# Compare all models, best first
+model_log %>%
+  arrange(cv_rmse)
+
+# Inspect categorical coefficients
+summary(m_cat_full)
+```
+
+### Interpretation: Comparing Feature Transformations
+
+The quadratic transformation of distance to Philadelphia City Hall produced the greatest improvement in predictive accuracy, reducing the 10-fold cross-validation RMSE from approximately 5.15 minutes in the baseline model to 5.01 minutes. This suggests that the relationship between distance from the city center and mean commute time is nonlinear.
+
+The categorical distance model also improved performance, achieving a CV RMSE of approximately 5.03 minutes. In this model, **Core** (less than 2 miles from City Hall) is the reference category. Holding the four socioeconomic predictors constant, census tracts in the **Outer** category (5 miles or more) have a predicted mean commute time approximately **4.76 minutes longer** than Core tracts.
+
+In contrast, the logarithmic transformation of burglary density increased CV RMSE to approximately 5.18 minutes, indicating that reducing the predictor's skewness did not improve its predictive usefulness.
+
+Overall, the quadratic distance term was the most effective transformation tested, although the improvement remains relatively modest.
+
+---
+
+## Part 6: Your final model
+
+Combine the features and transformations that earned their place, **judged by CV RMSE, not p-values.**
+
+```{r}
+#| label: final
+#| warning: false
+#| message: false
+
+# Final model: baseline predictors + quadratic distance
+f_final <- y ~ median_income + pct_renter +
+  pct_no_vehicle + pct_bachelors +
+  dist_ch_mi + I(dist_ch_mi^2)
+
+# Fit the final regression model
+m_final <- lm(f_final, data = tracts)
+
+# Display regression results
+summary(m_final)
+
+# Record final model performance
+model_log <- model_log %>%
+  add_row(
+    model = "final",
+    added = "Quadratic distance to City Hall",
+    cv_rmse = cv_rmse(f_final, tracts),
+    notes = "Selected based on lowest CV RMSE"
+  )
+
+# Compare all models
+model_log %>%
+  arrange(cv_rmse)
+```
+
+### Where is the final model wrong?
+
+```{r}
+#| label: resid-map-2
+#| fig-width: 14
+#| fig-height: 7
+#| warning: false
+#| message: false
+
+library(ggplot2)
+library(patchwork)
+
+# Calculate residuals for both models
+tracts <- tracts %>%
+  mutate(
+    resid_m1 = residuals(m1),
+    resid_final = residuals(m_final)
+  )
+
+# Use the same color scale for both maps
+resid_limit <- max(
+  abs(c(tracts$resid_m1, tracts$resid_final)),
+  na.rm = TRUE
+)
+
+# Baseline model map
+p_baseline <- ggplot(tracts) +
+  geom_sf(aes(fill = resid_m1), color = NA) +
+  scale_fill_gradient2(
+    low = "#176B4A",
+    mid = "#F8F5EE",
+    high = "#C5A15A",
+    midpoint = 0,
+    limits = c(-resid_limit, resid_limit),
+    name = "Residual\n(minutes)"
+  ) +
+  labs(
+    title = "Baseline Model",
+    subtitle = "Four socioeconomic predictors"
+  ) +
+  theme_void() +
+  theme(
+    plot.title = element_text(
+      face = "bold",
+      size = 15,
+      color = "#173F34"
+    ),
+    plot.subtitle = element_text(size = 10)
+  )
+
+# Final model map
+p_final <- ggplot(tracts) +
+  geom_sf(aes(fill = resid_final), color = NA) +
+  scale_fill_gradient2(
+    low = "#176B4A",
+    mid = "#F8F5EE",
+    high = "#C5A15A",
+    midpoint = 0,
+    limits = c(-resid_limit, resid_limit),
+    name = "Residual\n(minutes)"
+  ) +
+  labs(
+    title = "Final Model",
+    subtitle = "Quadratic distance to City Hall"
+  ) +
+  theme_void() +
+  theme(
+    plot.title = element_text(
+      face = "bold",
+      size = 15,
+      color = "#173F34"
+    ),
+    plot.subtitle = element_text(size = 10)
+  )
+
+# Compare both maps side by side
+(p_baseline + p_final) +
+  plot_layout(guides = "collect") +
+  plot_annotation(
+    title = "Where Do the Models Make Prediction Errors?",
+    subtitle = "Philadelphia census tracts | ACS 2019-2023",
+    caption = paste(
+      "Gold: actual commute time higher than predicted",
+      "Green: actual commute time lower than predicted",
+      sep = " | "
+    )
+  ) &
+  theme(
+    plot.background = element_rect(
+      fill = "#F8F5EE",
+      color = NA
+    ),
+    plot.title = element_text(
+      face = "bold",
+      color = "#173F34"
+    ),
+    legend.position = "right"
+  )
+```
+
+### Interpretation: Comparing Baseline and Final Model Residuals
+
+The baseline and final models show broadly similar spatial patterns of prediction errors across Philadelphia census tracts. Some clusters of overprediction and underprediction remain visible, particularly in parts of the central, northeastern, and southern areas of the city. Although adding a quadratic distance-to-City-Hall term reduced the cross-validated RMSE from 5.151 to 5.008 minutes (approximately 2.8%), the residual maps suggest that spatial clustering has not substantially disappeared. This indicates that distance to the city center captures some variation in commute times, but additional factors, such as transit accessibility, employment locations, and transportation connectivity, may still be needed to explain the remaining errors.
+
+### Are the biggest misses in the least reliable tracts?
+
+```{r}
+#| label: fog
+#| fig-width: 11
+#| fig-height: 6
+#| warning: false
+#| message: false
+
+ggplot(
+  tracts,
+  aes(x = y_cv, y = abs(resid_final))
+) +
+  geom_point(
+    color = "#176B4A",
+    alpha = 0.50,
+    size = 2.3
+  ) +
+  geom_smooth(
+    method = "loess",
+    formula = y ~ x,
+    se = FALSE,
+    color = "#C5A15A",
+    linewidth = 1.4
+  ) +
+  labs(
+    title = "Does ACS Uncertainty Affect Prediction Accuracy?",
+    subtitle = "Philadelphia census tracts | ACS 2019–2023",
+    x = "Coefficient of Variation (CV, %)",
+    y = "Absolute Prediction Error (minutes)",
+    caption = "Each point represents one census tract | Gold line: smoothed trend"
+  ) +
+  scale_y_continuous(
+    breaks = seq(0, 20, 5),
+    expand = expansion(mult = c(0.02, 0.08))
+  ) +
+  theme_minimal(base_size = 13) +
+  theme(
+    plot.background = element_rect(
+      fill = "#F8F5EE",
+      color = NA
+    ),
+    panel.background = element_rect(
+      fill = "#F8F5EE",
+      color = NA
+    ),
+    panel.grid.minor = element_blank(),
+    panel.grid.major = element_line(
+      color = "#E6E2D9",
+      linewidth = 0.3
+    ),
+    plot.title = element_text(
+      face = "bold",
+      color = "#173F34",
+      size = 17
+    ),
+    plot.subtitle = element_text(
+      color = "#65736A",
+      size = 11
+    ),
+    axis.title = element_text(
+      face = "bold",
+      color = "#173F34"
+    ),
+    axis.text = element_text(
+      color = "#4A554F"
+    ),
+    plot.caption = element_text(
+      color = "#65736A",
+      size = 9,
+      hjust = 1
+    ),
+    plot.margin = margin(15, 20, 15, 15)
+  )
+```
+
+### Interpretation: Prediction Errors and ACS Reliability
+
+The scatterplot suggests a modest positive relationship between ACS uncertainty and the absolute prediction errors of the final model. As the coefficient of variation (CV) increases, the smoothed trend generally rises, indicating that less reliable commute-time estimates tend to have somewhat larger prediction errors.
+
+However, substantial variation remains across census tracts, and some large errors also occur where CV is relatively low. This suggests that sampling uncertainty may contribute to prediction errors, but it does not fully explain them. Other unmeasured transportation and spatial factors may also affect the model's predictive accuracy.
+---
+
+## Part 7: Reflection (about 300 words)
+
+### Reflection
+
+The results show that spatial features do not necessarily improve prediction accuracy simply because they add more information. My baseline model, using four socioeconomic predictors, produced a cross-validated RMSE of 5.151 minutes. The most useful addition was distance to Philadelphia City Hall with a quadratic term, which reduced CV RMSE to 5.008 minutes, an improvement of approximately 2.8%. This suggests that commute times vary with distance from the city center in a nonlinear way. In contrast, the logarithmic transformation of residential burglary density performed worst, with a CV RMSE of 5.182 minutes. Burglary patterns may reflect neighborhood conditions, but they do not directly measure transportation accessibility.
+
+In the final model, the coefficient for distance to City Hall is 1.649, while its squared term is −0.09676. The β̂ interpretation is that the marginal association between distance and predicted commute time depends on distance itself: each additional mile changes predicted commute time by approximately \(1.649 - 0.19352d\) minutes, where \(d\) is the distance in miles, holding other predictors constant. For the ŷ interpretation, a tract located five miles from City Hall has a distance-related contribution of approximately 5.83 minutes to its predicted commute time, in addition to the intercept and socioeconomic predictors.
+
+Comparing the residual maps, several clusters of overprediction and underprediction remain even after the quadratic transformation. I would next investigate public transit accessibility, particularly access to frequent transit services and travel times to major employment centers. Historical SEPTA route and schedule data could help construct these measures.
+
+Finally, the uncertainty plot suggests that prediction errors generally increase as the ACS coefficient of variation rises. However, large errors also occur in relatively reliable tracts. Sampling uncertainty therefore explains only part of the remaining prediction error, while omitted spatial and transportation factors likely contribute as well.
+---
+
+

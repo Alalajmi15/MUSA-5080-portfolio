@@ -1,0 +1,85 @@
+
+/* ==========================================
+   ASSIGNMENT 5 — DARK HALLOWEEN THEME
+   A Nightmare in Regression Class
+   ========================================== */
+
+/* Main background */
+body {
+  background-color: #101312 !important;
+  color: #e8dfcc !important;
+}
+
+#quarto-content,
+main.content {
+  background-color: #101312 !important;
+  color: #e8dfcc !important;
+}
+
+/* Headings */
+h1, h2, h3, h4 {
+  color: #d8a45e !important;
+}
+
+h2 {
+  border-bottom: 1px solid #805136 !important;
+  padding-bottom: 12px;
+}
+
+/* Paragraphs and lists */
+p, li {
+  color: #e8dfcc;
+}
+
+/* Links */
+a {
+  color: #e5a15a;
+}
+
+a:hover {
+  color: #ffd18c;
+}
+
+/* Table of contents */
+#TOC,
+.sidebar,
+.sidebar-navigation {
+  background-color: #171d1b !important;
+  color: #e8dfcc !important;
+}
+
+#TOC a {
+  color: #d7c6a8 !important;
+}
+
+#TOC a.active {
+  color: #f0a34d !important;
+}
+
+/* Navigation bar */
+.navbar {
+  background-color: #12231e !important;
+  border-bottom: 2px solid #ad743f;
+}
+
+.navbar a {
+  color: #f0e5d0 !important;
+}
+
+/* Code blocks */
+pre, code {
+  background-color: #202723;
+  color: #f0bb76;
+}
+
+/* Tables */
+table {
+  color: #e8dfcc;
+}
+
+/* Quotes */
+blockquote {
+  border-left: 4px solid #c38143;
+  background-color: #1c2420;
+  padding: 15px;
+}

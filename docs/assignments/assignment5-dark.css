@@ -1,0 +1,142 @@
+
+/* ==========================================
+   ASSIGNMENT 5 — DARK HALLOWEEN THEME
+   A Nightmare in Regression Class
+   ========================================== */
+
+/* Main background */
+body {
+  background-color: #101312 !important;
+  color: #e8dfcc !important;
+}
+
+#quarto-content,
+main.content {
+  background-color: #101312 !important;
+  color: #e8dfcc !important;
+}
+
+/* Headings */
+h1, h2, h3, h4 {
+  color: #d8a45e !important;
+}
+
+h2 {
+  border-bottom: 1px solid #805136 !important;
+  padding-bottom: 12px;
+}
+
+/* Paragraphs and lists */
+p, li {
+  color: #e8dfcc;
+}
+
+/* Links */
+a {
+  color: #e5a15a;
+}
+
+a:hover {
+  color: #ffd18c;
+}
+
+/* Table of contents */
+#TOC,
+.sidebar,
+.sidebar-navigation {
+  background-color: #171d1b !important;
+  color: #e8dfcc !important;
+}
+
+#TOC a {
+  color: #d7c6a8 !important;
+}
+
+#TOC a.active {
+  color: #f0a34d !important;
+}
+
+/* Navigation bar */
+.navbar {
+  background-color: #12231e !important;
+  border-bottom: 2px solid #ad743f;
+}
+
+.navbar a {
+  color: #f0e5d0 !important;
+}
+
+/* Code blocks */
+pre, code {
+  background-color: #202723;
+  color: #f0bb76;
+}
+
+/* Tables */
+table {
+  color: #e8dfcc;
+}
+
+/* Quotes */
+blockquote {
+  border-left: 4px solid #c38143;
+  background-color: #1c2420;
+  padding: 15px;
+}
+
+/* ========================================
+   ASSIGNMENT 5 — FINAL DESIGN TOUCHES
+   ======================================== */
+
+/* Center the main title and subtitle */
+#title-block-header {
+  text-align: center !important;
+}
+
+.quarto-title-banner .quarto-title,
+.quarto-title-banner .quarto-title h1 {
+  text-align: center !important;
+}
+
+.quarto-title-banner h1.title {
+  font-family: Georgia, serif !important;
+  font-size: clamp(2.3rem, 4.5vw, 4.2rem) !important;
+  font-weight: 700 !important;
+  color: #e6ad60 !important;
+  letter-spacing: 1.5px;
+  text-shadow: 0 0 24px rgba(194, 119, 44, 0.28);
+}
+
+.quarto-title-banner .subtitle {
+  text-align: center !important;
+  color: #e8dfcc !important;
+  font-size: 1.2rem;
+}
+
+/* Refine the author and publication metadata */
+.quarto-title-meta {
+  border-top: 1px solid rgba(216, 164, 94, 0.25);
+  padding-top: 20px;
+}
+
+.quarto-title-meta-heading {
+  color: #d8a45e !important;
+  letter-spacing: 2px;
+}
+
+/* Elegant gold divider below the hero image */
+main.content > section:first-of-type {
+  border-top: 1px solid rgba(216, 164, 94, 0.5);
+  padding-top: 28px;
+}
+
+/* Improve mobile readability */
+@media (max-width: 768px) {
+  .quarto-title-banner h1.title {
+    font-size: 2.1rem !important;
+  }
+
+  .quarto-title-banner .subtitle {
+    font-size: 1rem;
+  }
+}
